@@ -5,7 +5,7 @@ vertice_name={'GW','EC1','EC2','EC3','EC4','R1','R2','R3','R4','R5'};
 numNode=length(vertice_name);
 
 for v=1:numNode
-    eval([vertice_name{v},'=',num2str(v)],';');
+    eval([vertice_name{v},'=',num2str(v),';']);
 end
 
 EdgeCloud=EC1:EC4;
