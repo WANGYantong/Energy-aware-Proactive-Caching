@@ -16,7 +16,7 @@ pi=optimvar('pi',NF,length(para.EdgeCloud),data.N_e,data.N_es,'Type','integer',.
     'LowerBound',0,'UpperBound',1);
 
 omega=optimvar('omega',size(x),'LowerBound',0);
-phi=optimvar('phi',size(pi),'LowerBound',1);
+phi=optimvar('phi',size(pi),'LowerBound',0);
 
 %% constraints
 y_x=repmat(y,[1,1,data.N_es]);
@@ -71,7 +71,7 @@ Energy.Constraints.linear_constr=linear_constr;
 Energy.Constraints.delay_constr=delay_constr;
 
 %% solver
-opts=optimoptions('intlinprog','Display','off','MaxTime',3600);
+opts=optimoptions('intlinprog','Display','off','MaxTime',1800);
 
 tic;
 [sol,fval,exitflag,output]=solve(Energy,'Options',opts);
@@ -83,6 +83,8 @@ if isempty(sol)
 end
 
 result.sol=sol;
+result.sol.EC=sum(sum((data.U_es+data.W_C*data.SC).*sol.y))+sum(sum(sum(data.U_esv.*sol.x)));
+result.sol.ET=fval-result.sol.EC;
 result.value=fval;
 result.exitflag=exitflag;
 result.output=output;
