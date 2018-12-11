@@ -6,6 +6,7 @@ NF=length(flow);
 data.S_k=data.S_k(1:NF);
 data.delay_k=data.delay_k(1:NF);
 data.probability_ka=data.probability_ka(1:NF,:);
+data.T_k=data.T_k(1:NF);
 
 %% decision variable
 x=optimvar('x',length(para.EdgeCloud),data.N_e,data.N_es,'Type','integer',...
@@ -13,6 +14,10 @@ x=optimvar('x',length(para.EdgeCloud),data.N_e,data.N_es,'Type','integer',...
 y=optimvar('y',length(para.EdgeCloud),data.N_e,'Type','integer',...
     'LowerBound',0,'UpperBound',1);
 pi=optimvar('pi',NF,length(para.EdgeCloud),data.N_e,data.N_es,'Type','integer',...
+    'LowerBound',0,'UpperBound',1);
+z=optimvar('z',NF,length(para.graph.Edges.Weight),'Type','integer',...
+    'LowerBound',0,'UpperBound',1);
+psi=optimvar('psi',NF,length(para.AccessRouter),length(para.EdgeCloud),'Type','integer',...
     'LowerBound',0,'UpperBound',1);
 
 omega=optimvar('omega',size(x),'LowerBound',0);
@@ -49,7 +54,6 @@ delay_constr=sum(sum(sum(phi,4),3),2)<=data.delay_k';
 EC=sum(sum((data.U_es+data.W_C*data.SC).*y))+sum(sum(sum(data.U_esv.*x)));
 
 pi_mid=squeeze(sum(sum(pi,4),3));
-% the code below need double check !!!
 pi_tem=squeeze(sum(pi_mid*data.N'.*data.probability_ka,2));
 ET=sum(data.S_k'.*pi_tem)*data.W_T*data.R+...
     sum(sum(data.probability_ka,2).*data.S_k')*data.W_T*data.M*(1-data.R);

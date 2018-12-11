@@ -29,6 +29,8 @@ data.N_e=2; % number of servers on EC
 data.N_es=4; % number of VMs in servers on EC
 data.SC=50*1024; % size of caching content, Unit: MB
 data.S_k=randi([5,10],size(flow))*102.4; % size of request content, Unit: MB
+data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
+data.T_k=randi([1,10],size(flow)); % required transmission rate
 mid_array=[5,5,5,5,5,10,10,10,10,10];
 data.delay_k=repmat(mid_array,1,NF); % delay tolerance of flow
 
@@ -65,23 +67,27 @@ data.W_T=2*10^(-8)*8*1024*1024;
 
 % shortes hop matrix
 data.N=zeros(length(AccessRouter),length(EdgeCloud));
+data.path=cell(length(AccessRouter),length(EdgeCloud));
 for ii=1:length(AccessRouter)
     for jj=1:length(EdgeCloud)
-        [~,data.N(ii,jj)]=shortestpath(G,AccessRouter(ii),EdgeCloud(jj));
+        [data.path{ii,jj},data.N(ii,jj)]=shortestpath(G,AccessRouter(ii),EdgeCloud(jj));
     end
 end
 
-data.M=10; % the number of hop if cache missing 
+data.beta=GetPathLinkRel(G,"undirected",data.path,length(AccessRouter),length(EdgeCloud));
+
+data.M=5; % the number of hop if cache missing 
 
 % caching ratio
 data.R=0.7;
 
+para.graph=G;
 para.EdgeCloud=EdgeCloud;
 para.AccessRouter=AccessRouter;
 para.NormalRouter=NormalRouter;
 %% Optimal Solution
 result=cell(NF,1);
-parfor ii=1:NF
+for ii=1:NF
     result{ii}=MILP(flow_parallel{ii},data,para);
 end
 
