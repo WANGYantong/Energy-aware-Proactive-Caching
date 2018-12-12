@@ -50,10 +50,27 @@ linear_constr=data.mu_esv.*omega-squeeze(sum(phi,1))==1;
 
 delay_constr=sum(sum(sum(phi,4),3),2)<=data.delay_k';
 
+link_constr=data.T_k*z<=data.B_l';
+
+pi_mid=squeeze(sum(sum(pi,4),3));
+pro_psi=repmat(data.probability_ka,[1,1,length(para.EdgeCloud)]);
+pi_psi=repmat(pi_mid,[length(para.AccessRouter),1,1]);
+pi_psi=reshape(pi_psi,NF,length(para.AccessRouter),length(para.EdgeCloud));
+psi_constr1=psi<=M*pro_psi.*pi_psi;
+psi_constr2=psi>=pro_psi.*pi_psi;
+
+[m,n,l]=size(data.beta);
+beta_z=reshape(data.beta,1,m*n*l);
+beta_z=repmat(beta_z,[NF,1]);
+beta_z=reshape(beta_z,NF,m,n,l);
+psi_z=repmat(psi,[size(data.beta,1),1,1,1]);
+psi_z=reshape(psi_z,NF,size(data.beta,1),length(para.AccessRouter),length(para.EdgeCloud));
+z_constr1=z<=sum(sum(beta_z.*psi_z,4),3);
+z_constr2=M*z>=sum(sum(beta_z.*psi_z,4),3);
+
 %% objective function
 EC=sum(sum((data.U_es+data.W_C*data.SC).*y))+sum(sum(sum(data.U_esv.*x)));
 
-pi_mid=squeeze(sum(sum(pi,4),3));
 pi_tem=squeeze(sum(pi_mid*data.N'.*data.probability_ka,2));
 ET=sum(data.S_k'.*pi_tem)*data.W_T*data.R+...
     sum(sum(data.probability_ka,2).*data.S_k')*data.W_T*data.M*(1-data.R);
@@ -73,6 +90,11 @@ Energy.Constraints.phi_constr2=phi_constr2;
 Energy.Constraints.phi_constr3=phi_constr3;
 Energy.Constraints.linear_constr=linear_constr;
 Energy.Constraints.delay_constr=delay_constr;
+Energy.Constraints.link_constr=link_constr;
+Energy.Constraints.psi_constr1=psi_constr1;
+Energy.Constraints.psi_constr2=psi_constr2;
+Energy.Constraints.z_constr1=z_constr1;
+Energy.Constraints.z_constr2=z_constr2;
 
 %% solver
 opts=optimoptions('intlinprog','Display','off','MaxTime',1800);

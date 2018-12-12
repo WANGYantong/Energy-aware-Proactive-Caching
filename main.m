@@ -35,20 +35,7 @@ mid_array=[5,5,5,5,5,10,10,10,10,10];
 data.delay_k=repmat(mid_array,1,NF); % delay tolerance of flow
 
 % user movement probability
-probability=zeros(NF_TOTAL,length(AccessRouter));
-for ii=1:NF_TOTAL
-    probability(ii,length(AccessRouter))=1;
-    for jj=1:length(AccessRouter)-1
-        probability(ii,jj)=rand()/(length(AccessRouter)-1);
-        probability(ii,length(AccessRouter))=...
-            probability(ii,length(AccessRouter))-probability(ii,jj);
-    end
-    index=randi(length(AccessRouter));
-    buffer=probability(ii,length(AccessRouter));
-    probability(ii,length(AccessRouter))=probability(ii,index);
-    probability(ii,index)=buffer;
-end
-data.probability_ka=probability;
+data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opt);
 
 % processing capacity of VM 
 data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es); 
