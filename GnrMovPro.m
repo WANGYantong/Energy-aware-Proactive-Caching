@@ -25,47 +25,137 @@ probability=zeros(NF,NA);
 
 switch opts
     case 'RL'
+        for ii=1:NF
+            [base,label]=SetBase(NA);
+            probability(ii,base)=1;
+            if label==1
+                probability(ii,base+1)=0.2*rand();
+                probability(ii,base)=probability(ii,base)-probability(ii,base+1);
+            elseif label==3
+                probability(ii,base-1)=0.2*rand();
+                probability(ii,base)=probability(ii,base)-probability(ii,base-1);
+            else
+                probability(ii,base-1)=0.1*rand();
+                probability(ii,base+1)=0.1*rand();
+                probability(ii,base)=probability(ii,base)...
+                    -probability(ii,base-1)-probability(ii,base+1);
+            end
+        end
         
     case 'RH'
+        for ii=1:NF
+            [base,label]=SetBase(NA);
+            probability(ii,base)=1;
+            if label==1
+                probability(ii,base+1)=0.4*rand()+0.6;
+                probability(ii,base)=probability(ii,base)-probability(ii,base+1);
+            elseif label==3
+                probability(ii,base-1)=0.4*rand()+0.6;
+                probability(ii,base)=probability(ii,base)-probability(ii,base-1);
+            else
+                probability(ii,base-1)=0.1*rand()+0.4;
+                probability(ii,base+1)=0.1*rand()+0.4;
+                probability(ii,base)=probability(ii,base)...
+                    -probability(ii,base-1)-probability(ii,base+1);
+            end
+        end
         
     case 'RHD'
+        for ii=1:NF
+            [base,label]=SetBase(NA);
+            probability(ii,base)=1;
+            if label==1
+                probability(ii,base+1)=0.1*rand(); % pretend base is #(base+1) and move to #(base) 
+                probability(ii,base)=probability(ii,base)-probability(ii,base+1);
+            elseif label==3
+                probability(ii,base-1)=0.4*rand()+0.6;
+                probability(ii,base)=probability(ii,base)-probability(ii,base-1);
+            else
+                probability(ii,base-1)=0.3*rand()+0.6;
+                probability(ii,base+1)=0.1*rand();
+                probability(ii,base)=probability(ii,base)...
+                    -probability(ii,base-1)-probability(ii,base+1);
+            end
+        end
         
     case 'CL'
-        base=FindBase(NA);
+%         [base,label]=SetBase(NA);
+        base=3;
+        label=2;
+        for ii=1:NF
+            probability(ii,base)=1;
+            if label==1
+                probability(ii,base+1)=0.2*rand();
+                probability(ii,base)=probability(ii,base)-probability(ii,base+1);
+            elseif label==3
+                probability(ii,base-1)=0.2*rand();
+                probability(ii,base)=probability(ii,base)-probability(ii,base-1);
+            else
+                probability(ii,base-1)=0.1*rand();
+                probability(ii,base+1)=0.1*rand();
+                probability(ii,base)=probability(ii,base)...
+                    -probability(ii,base-1)-probability(ii,base+1);
+            end
+        end
         
     case 'CH'
-        base=FindBase(NA);
+%         [base,label]=SetBase(NA);
+        base=3;
+        label=2;
+        for ii=1:NF
+            probability(ii,base)=1;
+            if label==1
+                probability(ii,base+1)=0.4*rand()+0.6;
+                probability(ii,base)=probability(ii,base)-probability(ii,base+1);
+            elseif label==3
+                probability(ii,base-1)=0.4*rand()+0.6;
+                probability(ii,base)=probability(ii,base)-probability(ii,base-1);
+            else
+                probability(ii,base-1)=0.1*rand()+0.4;
+                probability(ii,base+1)=0.1*rand()+0.4;
+                probability(ii,base)=probability(ii,base)...
+                    -probability(ii,base-1)-probability(ii,base+1);
+            end
+        end
         
     case 'CHD'
-        base=FindBase(NA);
+%         [base,label]=SetBase(NA);
+        base=3;
+        label=2;
+        for ii=1:NF
+            probability(ii,base)=1;
+            if label==1
+                probability(ii,base+1)=0.1*rand(); % pretend base is #(base+1) and move to #(base) 
+                probability(ii,base)=probability(ii,base)-probability(ii,base+1);
+            elseif label==3
+                probability(ii,base-1)=0.4*rand()+0.6;
+                probability(ii,base)=probability(ii,base)-probability(ii,base-1);
+            else
+                probability(ii,base-1)=0.3*rand()+0.6;
+                probability(ii,base+1)=0.1*rand();
+                probability(ii,base)=probability(ii,base)...
+                    -probability(ii,base-1)-probability(ii,base+1);
+            end
+        end
         
     otherwise 
+        error('Error. \n Illegal parameter: opts')
         
 end
 
-for ii=1:NF_TOTAL
-    probability(ii,length(AccessRouter))=1;
-    for jj=1:length(AccessRouter)-1
-        probability(ii,jj)=rand()/(length(AccessRouter)-1);
-        probability(ii,length(AccessRouter))=...
-            probability(ii,length(AccessRouter))-probability(ii,jj);
-    end
-    index=randi(length(AccessRouter));
-    buffer=probability(ii,length(AccessRouter));
-    probability(ii,length(AccessRouter))=probability(ii,index);
-    probability(ii,index)=buffer;
 end
 
-end
-
-
-function base=FindBase(NA)
+function [base,label]=SetBase(NA)
 
 base=randi([1,NA]);
 
+switch base
+    case 1
+        label=1;
+    case NA
+        label=3;
+    otherwise
+        label=2;
 end
-
-function pro
-
 
 end

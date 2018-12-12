@@ -11,11 +11,11 @@ for v=1:N
 end
 
 %% Construct Network Flow
-step=4;
-flow=1:20;
+step=10;
+flow=1:50;
 NF=length(flow)/step;
 
-NF_TOTAL=20;
+NF_TOTAL=50;
 
 flow_parallel=cell(NF,1);
 for ii=1:NF
@@ -35,7 +35,8 @@ mid_array=[5,5,5,5,5,10,10,10,10,10];
 data.delay_k=repmat(mid_array,1,NF); % delay tolerance of flow
 
 % user movement probability
-data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opt);
+opts={'RL','RH','RHD','CL','CH','CHD'};
+data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{1});
 
 % processing capacity of VM 
 data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es); 
@@ -73,49 +74,79 @@ para.EdgeCloud=EdgeCloud;
 para.AccessRouter=AccessRouter;
 para.NormalRouter=NormalRouter;
 %% Optimal Solution
-result=cell(NF,1);
-for ii=1:NF
-    result{ii}=MILP(flow_parallel{ii},data,para);
+result1=cell(NF,1);
+parfor ii=1:NF
+    result1{ii}=MILP(flow_parallel{ii},data,para);
+end
+
+result2=cell(NF,1);
+data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{2});
+parfor ii=1:NF
+    result2{ii}=MILP(flow_parallel{ii},data,para);
+end
+
+result3=cell(NF,1);
+data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{3});
+parfor ii=1:NF
+    result3{ii}=MILP(flow_parallel{ii},data,para);
+end
+
+result4=cell(NF,1);
+data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{4});
+parfor ii=1:NF
+    result4{ii}=MILP(flow_parallel{ii},data,para);
+end
+
+result5=cell(NF,1);
+data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{5});
+parfor ii=1:NF
+    result5{ii}=MILP(flow_parallel{ii},data,para);
+end
+
+result6=cell(NF,1);
+data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{6});
+parfor ii=1:NF
+    result6{ii}=MILP(flow_parallel{ii},data,para);
 end
 
 %% 
 
-EC=zeros(NF,1);
-ET=zeros(NF,1);
-cost=zeros(NF,1);
-for ii=1:NF
-    EC(ii)=result{ii}.sol.EC/1000;
-    ET(ii)=result{ii}.sol.ET/1000;
-    cost(ii)=result{ii}.value/1000;
-end
-flow_plot=1:4:20;
-
-figure(2);
-hold on;
-plot(flow_plot,cost,'-p','Color',[0.85,0.33,0.10],'LineWidth',3.6);
-plot(flow_plot,ET,'-+','Color',[0.30,0.75,0.93],'LineWidth',3.6);
-plot(flow_plot,EC,'-^','Color',[0.64,0.08,0.18],'LineWidth',3.6);
-xlabel('Number of flows');
-ylabel('Energy Consumption (KW)');
-lgd=legend({'Total Energy','Transmission Energy','Caching Energy'},...
-    'location','north');
-lgd.FontSize=24;
-hold off;
-
-NumSer=zeros(NF,1);
-NumVM=zeros(NF,1);
-for ii=1:NF
-    NumSer(ii)=sum(sum(result{ii}.sol.y~=zeros(length(EdgeCloud),data.N_e)));
-    NumVM(ii)=sum(sum(sum(result{ii}.sol.x~=zeros(length(EdgeCloud),data.N_e,data.N_es))));
-end
-figure(3);
-hold on;
-outage=[NumSer,NumVM];
-figure(3);
-bar(outage,1);
-xlabel('Number of flows');
-ylabel('Number of Openning Equipment');
-set(gca,'xtick',1:5,'xticklabel',{'1','5','9','13','17'});
-lgd=legend({'Server','Virtual Machine'},'location','north');
-lgd.FontSize=24;
-hold off;
+% EC=zeros(NF,1);
+% ET=zeros(NF,1);
+% cost=zeros(NF,1);
+% for ii=1:NF
+%     EC(ii)=result{ii}.sol.EC/1000;
+%     ET(ii)=result{ii}.sol.ET/1000;
+%     cost(ii)=result{ii}.value/1000;
+% end
+% flow_plot=1:4:20;
+% 
+% figure(2);
+% hold on;
+% plot(flow_plot,cost,'-p','Color',[0.85,0.33,0.10],'LineWidth',3.6);
+% plot(flow_plot,ET,'-+','Color',[0.30,0.75,0.93],'LineWidth',3.6);
+% plot(flow_plot,EC,'-^','Color',[0.64,0.08,0.18],'LineWidth',3.6);
+% xlabel('Number of flows');
+% ylabel('Energy Consumption (KW)');
+% lgd=legend({'Total Energy','Transmission Energy','Caching Energy'},...
+%     'location','north');
+% lgd.FontSize=24;
+% hold off;
+% 
+% NumSer=zeros(NF,1);
+% NumVM=zeros(NF,1);
+% for ii=1:NF
+%     NumSer(ii)=sum(sum(result{ii}.sol.y~=zeros(length(EdgeCloud),data.N_e)));
+%     NumVM(ii)=sum(sum(sum(result{ii}.sol.x~=zeros(length(EdgeCloud),data.N_e,data.N_es))));
+% end
+% figure(3);
+% hold on;
+% outage=[NumSer,NumVM];
+% figure(3);
+% bar(outage,1);
+% xlabel('Number of flows');
+% ylabel('Number of Openning Equipment');
+% set(gca,'xtick',1:5,'xticklabel',{'1','5','9','13','17'});
+% lgd=legend({'Server','Virtual Machine'},'location','north');
+% lgd.FontSize=24;
+% hold off;
