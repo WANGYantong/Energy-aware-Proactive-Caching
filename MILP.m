@@ -103,7 +103,7 @@ tic;
 [sol,fval,exitflag,output]=solve(Energy,'Options',opts);
 MILP_time=toc;
 
-if isempty(sol)
+if isempty(fval)
     disp('The solver did not return a solution.')
     return
 end

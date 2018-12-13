@@ -11,8 +11,8 @@ for v=1:N
 end
 
 %% Construct Network Flow
-step=10;
-flow=1:50;
+step=5;
+flow=1:40;
 NF=length(flow)/step;
 
 NF_TOTAL=50;
@@ -34,9 +34,8 @@ data.T_k=randi([1,10],size(flow)); % required transmission rate
 mid_array=[5,5,5,5,5,10,10,10,10,10];
 data.delay_k=repmat(mid_array,1,NF); % delay tolerance of flow
 
-% user movement probability
-opts={'RL','RH','RHD','CL','CH','CHD'};
-data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{1});
+% user movement probability option
+moving_opts={'RL','RH','RHD','CL','CH','CHD'};
 
 % processing capacity of VM 
 data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es); 
@@ -66,47 +65,23 @@ data.beta=GetPathLinkRel(G,"undirected",data.path,length(AccessRouter),length(Ed
 
 data.M=5; % the number of hop if cache missing 
 
-% caching ratio
-data.R=0.7;
+% caching ratio option
+cache_ratio=[0.6,0.8,1];
 
 para.graph=G;
 para.EdgeCloud=EdgeCloud;
 para.AccessRouter=AccessRouter;
 para.NormalRouter=NormalRouter;
 %% Optimal Solution
-result1=cell(NF,1);
-parfor ii=1:NF
-    result1{ii}=MILP(flow_parallel{ii},data,para);
-end
-
-result2=cell(NF,1);
-data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{2});
-parfor ii=1:NF
-    result2{ii}=MILP(flow_parallel{ii},data,para);
-end
-
-result3=cell(NF,1);
-data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{3});
-parfor ii=1:NF
-    result3{ii}=MILP(flow_parallel{ii},data,para);
-end
-
-result4=cell(NF,1);
-data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{4});
-parfor ii=1:NF
-    result4{ii}=MILP(flow_parallel{ii},data,para);
-end
-
-result5=cell(NF,1);
-data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{5});
-parfor ii=1:NF
-    result5{ii}=MILP(flow_parallel{ii},data,para);
-end
-
-result6=cell(NF,1);
-data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),opts{6});
-parfor ii=1:NF
-    result6{ii}=MILP(flow_parallel{ii},data,para);
+result=cell(NF,length(moving_opts),length(cache_ratio));
+for jj=1:length(moving_opts)
+    data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{jj});
+    for kk=1:length(cache_ratio)
+        data.R=cache_ratio(kk);
+        parfor ii=1:NF
+            result{ii,jj,kk}=MILP(flow_parallel{ii},data,para);
+        end
+    end
 end
 
 %% 
