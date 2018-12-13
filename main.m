@@ -79,7 +79,8 @@ for jj=1:length(moving_opts)
     for kk=1:length(cache_ratio)
         data.R=cache_ratio(kk);
         parfor ii=1:NF
-            result{ii,jj,kk}=MILP(flow_parallel{ii},data,para);
+            buff=MILP(flow_parallel{ii},data,para);
+            result{ii,jj,kk}=buff;
         end
     end
 end
