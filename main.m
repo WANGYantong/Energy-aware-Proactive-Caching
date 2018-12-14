@@ -2,7 +2,7 @@ clear
 clc
 
 addpath(genpath(pwd));
-
+rng(1);
 %% Generate Network
 [G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo();
 N=length(vertice_names);
@@ -12,10 +12,10 @@ end
 
 %% Construct Network Flow
 step=5;
-flow=1:40;
+flow=1:30;
 NF=length(flow)/step;
 
-NF_TOTAL=50;
+NF_TOTAL=30;
 
 flow_parallel=cell(NF,1);
 for ii=1:NF
