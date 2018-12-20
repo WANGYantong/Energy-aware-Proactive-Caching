@@ -37,7 +37,6 @@ data.delay_k=repmat(mid_array,1,NF); % delay tolerance of flow
 % user movement probability option
 moving_opts={'RL','RH','RHD','CL','CH','CHD'};
 
-% processing capacity of VM 
 data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es); 
 
 % idle power of server, unit: Watt
@@ -67,22 +66,38 @@ data.M=5; % the number of hop if cache missing
 
 % caching ratio option
 cache_ratio=[0.6,0.8,1];
+data.R=cache_ratio(1);
 
 para.graph=G;
 para.EdgeCloud=EdgeCloud;
 para.AccessRouter=AccessRouter;
 para.NormalRouter=NormalRouter;
 %% Optimal Solution
-result=cell(NF,length(moving_opts),length(cache_ratio));
-for jj=1:length(moving_opts)
-    data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{jj});
-    for kk=1:length(cache_ratio)
-        data.R=cache_ratio(kk);
-        parfor ii=1:NF
-            buff=MILP(flow_parallel{ii},data,para);
-            result{ii,jj,kk}=buff;
+result=cell(NF,length(moving_opts));
+buffer=cell(size(result));
+
+% initial point
+if data.R ~= cache_ratio(1)
+    load('result\result_R6.mat','buffer');
+else
+    for ii=1:NF
+        for jj=1:length(moving_opts)
+            buffer{ii,jj}.sol=[];
         end
     end
+end
+
+for jj=1:length(moving_opts)
+    data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{jj});
+    parfor ii=1:NF
+        buff=MILP(flow_parallel{ii},data,para,buffer{ii,jj});
+        result{ii,jj}=buff;
+    end
+end
+
+if data.R==cache_ratio(1)
+    buffer=result;
+    save('result\result_R6.mat','buffer');
 end
 
 %% 

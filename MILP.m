@@ -1,4 +1,4 @@
-function  result=MILP(flow,data,para)
+function  result=MILP(flow,data,para,buffer)
 
 %% parameter tailor
 NF=length(flow);
@@ -97,10 +97,10 @@ Energy.Constraints.z_constr1=z_constr1;
 Energy.Constraints.z_constr2=z_constr2;
 
 %% solver
-opts=optimoptions('intlinprog','Display','off','MaxTime',7200);
+opts=optimoptions('intlinprog','Display','iter','MaxTime',21600);
 
 tic;
-[sol,fval,exitflag,output]=solve(Energy,'Options',opts);
+[sol,fval,exitflag,output]=solve(Energy,buffer.sol,'Options',opts);
 MILP_time=toc;
 
 if isempty(fval)
