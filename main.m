@@ -66,7 +66,7 @@ data.M=5; % the number of hop if cache missing
 
 % caching ratio option
 cache_ratio=[0.6,0.8,1];
-data.R=cache_ratio(2);
+data.R=cache_ratio(3);
 
 para.graph=G;
 para.EdgeCloud=EdgeCloud;
@@ -78,7 +78,11 @@ buffer=cell(size(result));
 
 % initial point
 if data.R ~= cache_ratio(1)
-    load('result\result_R6.mat','buffer');
+    if ispc
+        load('result\result_R6.mat','buffer');
+    elseif isunix
+        load('result/result_R6.mat','buffer');
+    end
 else
     for ii=1:NF
         for jj=1:length(moving_opts)
@@ -97,7 +101,11 @@ end
 
 if data.R==cache_ratio(1)
     buffer=result;
-    save('result\result_R6.mat','buffer');
+    if ispc
+        save('result\result_R6.mat','buffer');
+    elseif isunix
+        save('result/result_R6.mat','buffer');
+    end
 end
 
 %% 
