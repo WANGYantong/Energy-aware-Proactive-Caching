@@ -66,7 +66,7 @@ data.M=5; % the number of hop if cache missing
 
 % caching ratio option
 cache_ratio=[0.6,0.8,1];
-data.R=cache_ratio(3);
+data.R=cache_ratio(2);
 
 para.graph=G;
 para.EdgeCloud=EdgeCloud;
