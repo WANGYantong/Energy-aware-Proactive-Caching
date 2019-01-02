@@ -21,6 +21,8 @@ if nargin ~= 3
 	error('Error. \n Illegal input number')
 end
 
+rng(1);
+
 probability=zeros(NF,NA);
 
 switch opts

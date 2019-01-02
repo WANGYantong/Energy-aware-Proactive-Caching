@@ -65,8 +65,8 @@ data.beta=GetPathLinkRel(G,"undirected",data.path,length(AccessRouter),length(Ed
 data.M=5; % the number of hop if cache missing 
 
 % caching ratio option
-cache_ratio=[0.6,0.8,1];
-data.R=cache_ratio(2);
+cache_ratio=[0.7,0.8,1];
+data.R=cache_ratio(1);
 
 para.graph=G;
 para.EdgeCloud=EdgeCloud;
@@ -74,6 +74,7 @@ para.AccessRouter=AccessRouter;
 para.NormalRouter=NormalRouter;
 %% Optimal Solution
 result=cell(NF,length(moving_opts));
+% result_NEC=cell(NF,length(moving_opts));
 buffer=cell(size(result));
 
 % initial point
@@ -91,22 +92,25 @@ else
     end
 end
 
-for jj=1:length(moving_opts)
+% for jj=1:length(moving_opts)
+for jj=1:2
     data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{jj});
     parfor ii=1:NF
         buff=MILP(flow_parallel{ii},data,para,buffer{ii,jj});
         result{ii,jj}=buff;
+%         buff=NEC(flow_parallel{ii},data,para);
+%         result_NEC{ii,jj}=buff;
     end
 end
 
-if data.R==cache_ratio(1)
-    buffer=result;
-    if ispc
-        save('result\result_R6.mat','buffer');
-    elseif isunix
-        save('result/result_R6.mat','buffer');
-    end
-end
+% if data.R==cache_ratio(1)
+%     buffer=result;
+%     if ispc
+%         save('result\result_R6.mat','buffer');
+%     elseif isunix
+%         save('result/result_R6.mat','buffer');
+%     end
+% end
 
 %% 
 
