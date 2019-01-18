@@ -2,8 +2,10 @@ classdef Router
     % Original network router in ICN-based RAN
     
     properties
+        id;
         posX;
         posY;
+        
     end
     
     methods

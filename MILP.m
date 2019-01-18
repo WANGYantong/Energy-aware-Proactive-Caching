@@ -69,7 +69,7 @@ z_constr1=z<=sum(sum(beta_z.*psi_z,4),3);
 z_constr2=M*z>=sum(sum(beta_z.*psi_z,4),3);
 
 %% objective function
-EC=sum(sum((data.U_es+data.W_C*data.SC).*y))+sum(sum(sum(data.U_esv.*x)));
+EC=sum(sum((data.U_es+data.W_C*data.SC).*y))+sum(sum(sum(data.U_esv.*x)))*data.DeltaT;
 
 pi_tem=squeeze(sum(pi_mid*data.N'.*data.probability_ka,2));
 ET=sum(data.S_k'.*pi_tem)*data.W_T*data.R+...
@@ -87,7 +87,7 @@ Energy.Constraints.route_constr=route_constr;
 Energy.Constraints.queue_constr=queue_constr;
 Energy.Constraints.phi_constr1=phi_constr1;
 Energy.Constraints.phi_constr2=phi_constr2;
-Energy.Constraints.phi_constr3=phi_constr3;
+% Energy.Constraints.phi_constr3=phi_constr3;
 Energy.Constraints.linear_constr=linear_constr;
 Energy.Constraints.delay_constr=delay_constr;
 Energy.Constraints.link_constr=link_constr;
@@ -97,7 +97,7 @@ Energy.Constraints.z_constr1=z_constr1;
 Energy.Constraints.z_constr2=z_constr2;
 
 %% solver
-opts=optimoptions('intlinprog','Display','off','MaxTime',7200);
+opts=optimoptions('intlinprog','Display','off','MaxTime',1800);
 
 tic;
 [sol,fval,exitflag,output]=solve(Energy,buffer.sol,'Options',opts);

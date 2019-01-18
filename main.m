@@ -4,18 +4,23 @@ clc
 addpath(genpath(pwd));
 rng(1);
 %% Generate Network
-[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo();
+[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(1);
 N=length(vertice_names);
 for v=1:N
     eval([vertice_names{v},'=',num2str(v),';']);
 end
 
-%% Construct Network Flow
-step=5;
-flow=1:30;
+%% Construct Network Flow for Each Time Slot
+
+%Time slot duration, unit: second
+data.DeltaT=3600*1;
+
+%Request Flow
+step=50;
+flow=1:300;
 NF=length(flow)/step;
 
-NF_TOTAL=30;
+NF_TOTAL=300;
 
 flow_parallel=cell(NF,1);
 for ii=1:NF
@@ -31,13 +36,14 @@ data.SC=50*1024; % size of caching content, Unit: MB
 data.S_k=randi([5,10],size(flow))*102.4; % size of request content, Unit: MB
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
 data.T_k=randi([1,10],size(flow)); % required transmission rate
-mid_array=[5,5,5,5,5,10,10,10,10,10];
-data.delay_k=repmat(mid_array,1,NF); % delay tolerance of flow
+mid_array=[5,5,5,5,5,10,10,10,10,10]/3600;
+data.delay_k=repmat(mid_array,1,NF_TOTAL/length(mid_array)); % delay tolerance of flow
 
 % user movement probability option
 moving_opts={'RL','RH','RHD','CL','CH','CHD'};
 
-data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es); 
+% data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es)*10; 
+data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*25;
 
 % idle power of server, unit: Watt
 data.U_es=ones(length(EdgeCloud),data.N_e)*95.92;
