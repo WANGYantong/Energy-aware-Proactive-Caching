@@ -3,19 +3,16 @@ classdef Router
     
     properties
         id;                  % identification of router
-%         buffer;           % waiting list for coming request
-        connection;   % list for recording connected 
-        forward;        % forward map
-%         mu;               % ability to deal with request, measured by processing time
+        connection;          % list for recording connected 
+        forward;             % forward map
     end
     
     methods
         function obj = Router(router_setting)
             %ROUTER Construct an instance of this class
-            %   Detailed explanation goes here
             obj.id=router_setting.id;
-%             obj.buffer=cell(router_setting.size);
             obj.connection=router_setting.connection;
+            obj.forward=
         end
         
 %         function send
