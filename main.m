@@ -4,7 +4,7 @@ clc
 addpath(genpath(pwd));
 rng(1);
 %% Generate Network
-[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(1);
+[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(2);
 N=length(vertice_names);
 for v=1:N
     eval([vertice_names{v},'=',num2str(v),';']);
@@ -13,14 +13,14 @@ end
 %% Construct Network Flow for Each Time Slot
 
 %Time slot duration, unit: second
-data.DeltaT=3600*1;
+data.DeltaT=60*10;
 
 %Request Flow
-step=50;
-flow=1:300;
+step=5;
+flow=1:30;
 NF=length(flow)/step;
 
-NF_TOTAL=300;
+NF_TOTAL=500;
 
 flow_parallel=cell(NF,1);
 for ii=1:NF
@@ -35,15 +35,16 @@ data.N_es=4; % number of VMs in servers on EC
 data.SC=50*1024; % size of caching content, Unit: MB
 data.S_k=randi([5,10],size(flow))*102.4; % size of request content, Unit: MB
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
-data.T_k=randi([1,10],size(flow)); % required transmission rate
-mid_array=[5,5,5,5,5,10,10,10,10,10]/3600;
+% data.T_k=randi([1,10],size(flow)); % required transmission rate
+data.T_k=ones(size(flow)); 
+mid_array=[5,5,5,5,5,10,10,10,10,10];
 data.delay_k=repmat(mid_array,1,NF_TOTAL/length(mid_array)); % delay tolerance of flow
 
 % user movement probability option
-moving_opts={'RL','RH','RHD','CL','CH','CHD'};
+moving_opts={'RL','RH','RHD','RM','CL','CH','CHD'};
 
 % data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es)*10; 
-data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*25;
+data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*20;
 
 % idle power of server, unit: Watt
 data.U_es=ones(length(EdgeCloud),data.N_e)*95.92;
@@ -79,31 +80,31 @@ para.EdgeCloud=EdgeCloud;
 para.AccessRouter=AccessRouter;
 para.NormalRouter=NormalRouter;
 %% Optimal Solution
-result=cell(NF,length(moving_opts));
+result=cell(NF,2);
 % result_NEC=cell(NF,length(moving_opts));
 buffer=cell(size(result));
 
 % initial point
-if data.R ~= cache_ratio(1)
-    if ispc
-        load('result\result_R6.mat','buffer');
-    elseif isunix
-        load('result/result_R6.mat','buffer');
-    end
-else
-    for ii=1:NF
-        for jj=1:length(moving_opts)
-            buffer{ii,jj}.sol=[];
-        end
-    end
-end
+% if data.R ~= cache_ratio(1)
+%     if ispc
+%         load('result\result_R6.mat','buffer');
+%     elseif isunix
+%         load('result/result_R6.mat','buffer');
+%     end
+% else
+%     for ii=1:NF
+%         for jj=1:length(moving_opts)
+%             buffer{ii,jj}.sol=[];
+%         end
+%     end
+% end
 
 % for jj=1:length(moving_opts)
-for jj=1:2
+for jj=4
     data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{jj});
     parfor ii=1:NF
-        buff=MILP(flow_parallel{ii},data,para,buffer{ii,jj});
-        result{ii,jj}=buff;
+        buff=MILP(flow_parallel{ii},data,para,buffer{ii,2});
+        result{ii,2}=buff;
 %         buff=NEC(flow_parallel{ii},data,para);
 %         result_NEC{ii,jj}=buff;
     end

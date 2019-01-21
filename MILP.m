@@ -1,5 +1,9 @@
 function  result=MILP(flow,data,para,buffer)
 
+if isempty(buffer)
+    buffer.sol=[];
+end
+
 %% parameter tailor
 NF=length(flow);
 
@@ -87,7 +91,7 @@ Energy.Constraints.route_constr=route_constr;
 Energy.Constraints.queue_constr=queue_constr;
 Energy.Constraints.phi_constr1=phi_constr1;
 Energy.Constraints.phi_constr2=phi_constr2;
-% Energy.Constraints.phi_constr3=phi_constr3;
+Energy.Constraints.phi_constr3=phi_constr3;
 Energy.Constraints.linear_constr=linear_constr;
 Energy.Constraints.delay_constr=delay_constr;
 Energy.Constraints.link_constr=link_constr;
