@@ -12,7 +12,12 @@ classdef Router
             %ROUTER Construct an instance of this class
             obj.id=router_setting.id;
             obj.connection=router_setting.connection;
-            obj.forward=
+            obj.forward=routing(router_setting.path);
+        end
+        
+        function table=routing(path)
+            table=zeros(size(path,2),2);
+            % next?
         end
         
 %         function send
