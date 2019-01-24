@@ -1,4 +1,4 @@
-classdef Router
+classdef RouterClass
     % Original network router in ICN-based RAN
     
     properties
@@ -9,7 +9,7 @@ classdef Router
     
     methods
         
-        function obj = Router(router_setting)
+        function obj = RouterClass(router_setting)
             %ROUTER Construct an instance of this class
             obj.id=router_setting.id;
             obj.connection=router_setting.connection;

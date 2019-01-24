@@ -1,4 +1,4 @@
-classdef End_User
+classdef EndUserClass < handle
     %END_USER Summary of this class goes here
     
     properties
@@ -13,9 +13,13 @@ classdef End_User
         vm;                   % the vm for processing request
     end
     
+    events
+        sending
+    end
+    
     methods
         
-        function obj = End_User(user_setting)
+        function obj = EndUserClass(user_setting)
             %END_USER Construct an instance of this class
             obj.id = user_setting.id;
             obj.position = obj.location(user_setting.probability, user_setting.access_router);
@@ -68,8 +72,11 @@ classdef End_User
         end
         
         function package=produce(obj)
-            package={obj.id, {obj.destination, obj.ec, obj.server, obj.vm}, ...
-                {obj.born_time, obj.delay, obj.born_time}, obj.interest};  % the second born_time represents current time stamp
+            package={obj.id,...
+                {obj.destination, obj.destination, obj.ec, obj.server, obj.vm}, ... % the second destination means next hop
+                {obj.born_time, obj.delay, obj.born_time},... % the second born_time represents current time stamp
+                obj.interest};  
+            notify(obj, 'sending',DeliveryPackageClass(package));
         end
                
     end

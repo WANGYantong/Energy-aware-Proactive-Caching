@@ -1,4 +1,4 @@
-classdef Edge_Cloud < Router
+classdef EdgeCloudClass < Router
     %EDGE_CLOUD Summary of this class goes here
     
     properties
@@ -7,7 +7,7 @@ classdef Edge_Cloud < Router
     end
     
     methods
-        function obj = Edge_Cloud(ec_setting)
+        function obj = EdgeCloudClass(ec_setting)
             %EDGE_CLOUD Construct an instance of this class
             obj@Router(ec_setting);
             obj.buffer=cell(ec_setting.size);
