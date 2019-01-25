@@ -71,12 +71,12 @@ classdef EndUserClass < handle
             end
         end
         
-        function package=produce(obj)
+        function produce(obj)
             package={obj.id,...
                 {obj.destination, obj.destination, obj.ec, obj.server, obj.vm}, ... % the second destination means next hop
                 {obj.born_time, obj.delay, obj.born_time},... % the second born_time represents current time stamp
                 obj.interest};  
-            notify(obj, 'sending',DeliveryPackageClass(package));
+            notify(obj,'sending',DeliveryPackageClass(package));
         end
                
     end

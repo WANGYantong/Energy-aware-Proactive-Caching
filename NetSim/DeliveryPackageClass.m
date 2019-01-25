@@ -1,14 +1,13 @@
 classdef (ConstructOnLoad) DeliveryPackageClass < event.EventData
-    
-    properties
-        Package = []
-    end
-    
-    methods
-        function eventData = SpecialEventDataClass(data)
-            eventData.Package = data;
-        end
-    end
-    
+   properties
+      Package
+   end
+   
+   methods
+      function data = DeliveryPackageClass(delivery)
+         data.Package = delivery;
+      end
+   end
 end
+
 
