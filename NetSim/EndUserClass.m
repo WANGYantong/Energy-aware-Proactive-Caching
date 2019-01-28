@@ -25,7 +25,7 @@ classdef EndUserClass < handle
             obj.position = obj.location(user_setting.probability, user_setting.access_router);
             obj.destination = obj.moving(user_setting.probability, user_setting.access_router);
             obj.interest = user_setting.interest;
-            obj.born_time = user_setting.born_time;
+%             obj.born_time = user_setting.born_time;
             obj.delay = user_setting.delay;
             obj.ec = user_setting.ec;
             obj.server = user_setting.server;
@@ -72,6 +72,7 @@ classdef EndUserClass < handle
         end
         
         function produce(obj)
+            obj.born_time=clock;
             package={obj.id,...
                 {obj.destination, obj.destination, obj.ec, obj.server, obj.vm}, ... % the second destination means next hop
                 {obj.born_time, obj.delay, obj.born_time},... % the second born_time represents current time stamp
