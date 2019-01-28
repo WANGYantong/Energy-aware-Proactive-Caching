@@ -101,7 +101,7 @@ Energy.Constraints.z_constr1=z_constr1;
 Energy.Constraints.z_constr2=z_constr2;
 
 %% solver
-opts=optimoptions('intlinprog','Display','off','MaxTime',1800);
+opts=optimoptions('intlinprog','Display','off','MaxTime',3600);
 
 tic;
 [sol,fval,exitflag,output]=solve(Energy,buffer.sol,'Options',opts);

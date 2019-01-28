@@ -4,7 +4,7 @@ clc
 addpath(genpath(pwd));
 rng(1);
 %% Generate Network
-[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(2);
+[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(1);
 N=length(vertice_names);
 for v=1:N
     eval([vertice_names{v},'=',num2str(v),';']);
@@ -13,7 +13,7 @@ end
 %% Construct Network Flow for Each Time Slot
 
 %Time slot duration, unit: second
-data.DeltaT=60*10;
+data.DeltaT=60*1;
 
 %Request Flow
 step=5;
@@ -69,7 +69,7 @@ end
 
 data.beta=GetPathLinkRel(G,"undirected",data.path,length(AccessRouter),length(EdgeCloud));
 
-data.M=5; % the number of hop if cache missing 
+data.M=15; % the number of hop if cache missing 
 
 % caching ratio option
 cache_ratio=[0.7,0.8,1];
@@ -80,7 +80,7 @@ para.EdgeCloud=EdgeCloud;
 para.AccessRouter=AccessRouter;
 para.NormalRouter=NormalRouter;
 %% Optimal Solution
-result=cell(NF,2);
+result=cell(NF,3);
 % result_NEC=cell(NF,length(moving_opts));
 buffer=cell(size(result));
 
@@ -103,8 +103,8 @@ buffer=cell(size(result));
 for jj=4
     data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{jj});
     parfor ii=1:NF
-        buff=MILP(flow_parallel{ii},data,para,buffer{ii,2});
-        result{ii,2}=buff;
+        buff=MILP(flow_parallel{ii},data,para,buffer{ii,1});
+        result{ii,1}=buff;
 %         buff=NEC(flow_parallel{ii},data,para);
 %         result_NEC{ii,jj}=buff;
     end
