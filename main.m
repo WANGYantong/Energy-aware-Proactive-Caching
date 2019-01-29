@@ -13,11 +13,11 @@ end
 %% Construct Network Flow for Each Time Slot
 
 %Time slot duration, unit: second
-data.DeltaT=60*1;
+% data.DeltaT=60*1;
 
 %Request Flow
-step=5;
-flow=1:30;
+step=10;
+flow=1:40;
 NF=length(flow)/step;
 
 NF_TOTAL=500;
@@ -32,7 +32,7 @@ end
 
 data.N_e=2; % number of servers on EC
 data.N_es=4; % number of VMs in servers on EC
-data.SC=50*1024; % size of caching content, Unit: MB
+data.SC=10*1024; % size of caching content, Unit: MB
 data.S_k=randi([5,10],size(flow))*102.4; % size of request content, Unit: MB
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
 % data.T_k=randi([1,10],size(flow)); % required transmission rate
@@ -52,11 +52,11 @@ data.U_es=ones(length(EdgeCloud),data.N_e)*95.92;
 % power consumption of VM
 data.U_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*16.02;
 
-% power efficiency of storage
-data.W_C=10^(-9)*8*1024*1024;
+% power efficiency of storage(SSD)
+data.W_C=6.25*10^(-12)*8*1024*1024;
 
 % power efficiency of transmission
-data.W_T=2*10^(-8)*8*1024*1024;
+data.W_T=2.63*10^(-8)*8*1024*1024;
 
 % shortes hop matrix
 data.N=zeros(length(AccessRouter),length(EdgeCloud));
@@ -100,13 +100,17 @@ buffer=cell(size(result));
 % end
 
 % for jj=1:length(moving_opts)
-for jj=4
-    data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{jj});
+
+data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{4});
+
+time_slot=[1,3,5];
+for jj=1:3
+    data.DeltaT=60*time_slot(jj);
     parfor ii=1:NF
         buff=MILP(flow_parallel{ii},data,para,buffer{ii,1});
-        result{ii,1}=buff;
-%         buff=NEC(flow_parallel{ii},data,para);
-%         result_NEC{ii,jj}=buff;
+        result{ii,jj}=buff;
+        %         buff=NEC(flow_parallel{ii},data,para);
+        %         result_NEC{ii,jj}=buff;
     end
 end
 

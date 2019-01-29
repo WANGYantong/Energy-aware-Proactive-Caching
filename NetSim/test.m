@@ -71,7 +71,9 @@ for ii=1:length(ec_setting)
     ec_setting{ii}.connection=neighbors(para.graph, ec_setting{ii}.id);
     ec_setting{ii}.path=data.path;
     ec_setting{ii}.ec=para.EdgeCloud;
-    ec_setting{ii}.size=size(end_user);
+    ec_setting{ii}.numServer=2;
+    ec_setting{ii}.numVM=4;
+    ec_setting{ii}.sizeBuffer=size(end_user);
     ec_setting{ii}.mu=2.5;
     edgeclouds{ii}=EdgeCloudClass(ec_setting{ii});
 end

@@ -73,7 +73,7 @@ z_constr1=z<=sum(sum(beta_z.*psi_z,4),3);
 z_constr2=M*z>=sum(sum(beta_z.*psi_z,4),3);
 
 %% objective function
-EC=sum(sum((data.U_es+data.W_C*data.SC).*y))+sum(sum(sum(data.U_esv.*x)))*data.DeltaT;
+EC=(sum(sum((data.U_es+data.W_C*data.SC).*y))+sum(sum(sum(data.U_esv.*x))))*data.DeltaT;
 
 pi_tem=squeeze(sum(pi_mid*data.N'.*data.probability_ka,2));
 ET=sum(data.S_k'.*pi_tem)*data.W_T*data.R+...
@@ -101,7 +101,7 @@ Energy.Constraints.z_constr1=z_constr1;
 Energy.Constraints.z_constr2=z_constr2;
 
 %% solver
-opts=optimoptions('intlinprog','Display','off','MaxTime',3600);
+opts=optimoptions('intlinprog','Display','off','MaxTime',7200);
 
 tic;
 [sol,fval,exitflag,output]=solve(Energy,buffer.sol,'Options',opts);
@@ -113,7 +113,7 @@ if isempty(fval)
 end
 
 result.sol=sol;
-result.sol.EC=sum(sum((data.U_es+data.W_C*data.SC).*sol.y))+sum(sum(sum(data.U_esv.*sol.x)));
+result.sol.EC=(sum(sum((data.U_es+data.W_C*data.SC).*sol.y))+sum(sum(sum(data.U_esv.*sol.x))))*data.DeltaT;
 result.sol.ET=fval-result.sol.EC;
 result.value=fval;
 result.exitflag=exitflag;

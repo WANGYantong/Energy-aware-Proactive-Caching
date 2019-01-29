@@ -46,7 +46,7 @@ classdef RouterClass < handle
                     fprintf('Package %d is received by Router %d\n',eventData.Package{1},obj.id);
                 else                          % relay the package                   
                     fprintf('Package %d is relayed by Router %d\n',eventData.Package{1},obj.id);
-                    pause(1);             % pretend processing delay+propogation delay
+                    pause(0.1);             % pretend processing delay+propogation delay
                     index=find(obj.forward(:,2)==eventData.Package{2}{3});
                     eventData.Package{2}{2}=obj.forward(index,1);            % update the next hop destination according to forward map
                     eventData.Package{3}{3}=clock;            % update the time stamp                    
