@@ -4,7 +4,7 @@ clc
 addpath(genpath(pwd));
 rng(1);
 %% Generate Network
-[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(1);
+[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(2);
 N=length(vertice_names);
 for v=1:N
     eval([vertice_names{v},'=',num2str(v),';']);
@@ -33,7 +33,8 @@ end
 data.N_e=2; % number of servers on EC
 data.N_es=4; % number of VMs in servers on EC
 data.SC=10*1024; % size of caching content, Unit: MB
-data.S_k=randi([5,10],size(flow))*102.4; % size of request content, Unit: MB
+% data.S_k=randi([5,10],size(flow))*102.4; % size of request content, Unit: MB
+data.S_k=ones(size(flow))*5*102.4;
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
 % data.T_k=randi([1,10],size(flow)); % required transmission rate
 data.T_k=ones(size(flow)); 
@@ -44,7 +45,7 @@ data.delay_k=repmat(mid_array,1,NF_TOTAL/length(mid_array)); % delay tolerance o
 moving_opts={'RL','RH','RHD','RM','CL','CH','CHD'};
 
 % data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es)*10; 
-data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*20;
+data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*30;
 
 % idle power of server, unit: Watt
 data.U_es=ones(length(EdgeCloud),data.N_e)*95.92;
@@ -73,7 +74,7 @@ data.M=15; % the number of hop if cache missing
 
 % caching ratio option
 cache_ratio=[0.7,0.8,1];
-data.R=cache_ratio(1);
+data.R=cache_ratio(2);
 
 para.graph=G;
 para.EdgeCloud=EdgeCloud;
