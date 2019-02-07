@@ -4,7 +4,7 @@ classdef RouterClass < handle
     properties
         id;                  % identification of router
         connection;          % list for recording connected 
-        forward;             % forward map
+        forward;             % forward table
     end
     
     events

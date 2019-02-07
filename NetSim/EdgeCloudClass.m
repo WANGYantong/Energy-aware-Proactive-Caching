@@ -13,7 +13,7 @@ classdef EdgeCloudClass < RouterClass
             obj.buffer=cell(ec_setting.numServer,ec_setting.numVM);
             for ii=1:ec_setting.numServer
                 for jj=1:ec_setting.numVM
-                    obj.buffer=cell(ec_setting.sizeBuffer);
+                    obj.buffer{ii,jj}=cell(ec_setting.sizeBuffer);
                 end
             end
             obj.mu=ec_setting.mu;
@@ -42,6 +42,7 @@ classdef EdgeCloudClass < RouterClass
             for ii=1:length(obj.buffer{serverIdx,vmIdx})
                 if isempty(obj.buffer{serverIdx,vmIdx}{ii})
                     obj.buffer{serverIdx,vmIdx}{ii}=Package;
+                    break;
                 end
             end
         end
@@ -49,26 +50,25 @@ classdef EdgeCloudClass < RouterClass
         function processBuffer(obj)
             for ii=1:size(obj.buffer,1)
                 for jj=1:size(obj.buffer,2)
-                    for kk=1:length(obj.buffer{ii,jj})
-                        if isempty(obj.buffer{ii,jj}{kk})
-                            break;
-                        end
-                        obj.buffer{ii,jj}{kk}=obj.processPackage(obj.buffer{ii,jj}{kk});
-                        diff=obj.buffer{ii,jj}{kk}.Package{3}{3}-obj.buffer{ii,jj}{kk}.Package{3}{1};
-                        totalTime=diff(4)*60*60+diff(5)*60+diff(6);
-                        if totalTime>obj.buffer{ii,jj}{kk}.Package{3}{2}
-                            fprintf('Package %d is expired when processed by Edge Cloud %d\n', eventData.Package{1},obj.id);
-                        else
-                            fprintf('Package %d is processed by Edge Cloud %d before deadline\n', eventData.Package{1},obj.id);
-                        end
+                    if isempty(obj.buffer{ii,jj})
+                        break;
                     end
+%                     for kk=1:length(obj.buffer{ii,jj})
+%                         if isempty(obj.buffer{ii,jj}{kk})
+%                             break;
+%                         end
+%                         obj.buffer{ii,jj}{kk}=obj.processPackage(obj.buffer{ii,jj}{kk});
+%                         diff=obj.buffer{ii,jj}{kk}{3}{3}-obj.buffer{ii,jj}{kk}{3}{1};
+%                         totalTime=diff(4)*60*60+diff(5)*60+diff(6);
+%                         if totalTime>obj.buffer{ii,jj}{kk}{3}{2}
+%                             fprintf('Package %d is expired when processed by Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+%                         else
+%                             fprintf('Package %d is processed by Edge Cloud %d before deadline\n',obj.buffer{ii,jj}{kk}{1},obj.id);
+%                         end
+%                     end
                 end
             end
-        end
-        
-        function bufferAft=processPackage(obj, bufferPre)
-            bufferAft=bufferPre;
-        end      
+        end    
         
     end
 end
