@@ -2,6 +2,9 @@ clear
 clc
 rng(1);
 
+cd ..;
+addpath(genpath(pwd));
+cd NetSim\;
 %% Generate Network Topology
 vertice_name={'R1','R2','R3','R4','EC1','EC2'};
 numNode=length(vertice_name);
@@ -32,21 +35,23 @@ for ii=1:length(AccessRouter)
     end
 end
 
-data.probability_ka=GnrMovPro(6,length(AccessRouter),'RM');
+data.probability_ka=GnrMovPro(20,length(AccessRouter),'RM');
 
 para.graph=G;
 para.NormalRouter=NormalRouter;
 para.EdgeCloud=EdgeCloud;
 %% Produce Routers, Mobile Users and Edge Clouds
 % mobile users
-end_user=cell(6,1);
-for ii=1:6
+NU=20; %number of users
+interest=zipfrnd(0.8,100,NU);%generate interest content
+end_user=cell(1,NU);
+delay_vector=[0.5,1];
+for ii=1:NU
     user_setting.id=ii;
     user_setting.probability=data.probability_ka(ii,:);
     user_setting.access_router=AccessRouter;
-    user_setting.interest=ii*2;
-%     user_setting.born_time=clock;
-    user_setting.delay=4.5;
+    user_setting.interest=interest(ii);
+    user_setting.delay=delay_vector(randi(2));
     user_setting.ec=EdgeCloud(randi(2));
     user_setting.server=1;
     user_setting.vm=1;
@@ -74,12 +79,12 @@ for ii=1:length(ec_setting)
     ec_setting{ii}.numServer=2;
     ec_setting{ii}.numVM=4;
     ec_setting{ii}.sizeBuffer=size(end_user);
-    ec_setting{ii}.mu=2.5;
+    ec_setting{ii}.mu=20;
     edgeclouds{ii}=EdgeCloudClass(ec_setting{ii});
 end
 
 % add monitors to events
-listening_list=[end_user{1},end_user{2},end_user{3},end_user{4},end_user{5},end_user{6}];
+listening_list=[end_user{1:end}];
 
 for ii=1:3
     router{ii}.setlistener(listening_list);
@@ -92,14 +97,17 @@ edgeclouds{1}.setlistener([edgeclouds{2}]);
 edgeclouds{2}.setlistener([router{4}]);
 edgeclouds{2}.setlistener([edgeclouds{1}]);
 
-end_user{1}.produce; % mobile user 1 send request
-pause(5);
-end_user{2}.produce;
-pause(5);
-end_user{3}.produce;
-pause(5);
-end_user{4}.produce;
-pause(5);
-end_user{5}.produce;
-pause(5);
-end_user{6}.produce;
+dt=exprnd(1/NU,1,NU);
+
+for ii=1:NU
+    end_user{ii}.produce;
+    if ii<NU
+        pause(dt(ii));
+    else
+        continue;
+    end
+end
+
+
+edgeclouds{1}.processBuffer;
+edgeclouds{2}.processBuffer;
