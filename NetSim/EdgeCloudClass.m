@@ -4,6 +4,8 @@ classdef EdgeCloudClass < RouterClass
     properties
         buffer;           % waiting list for coming request
         mu;               % ability to deal with request, measured by processing time
+        cache_threshold;     % caching content library
+        retrieval_time;    % added latency when cache miss
     end
     
     methods
@@ -17,6 +19,8 @@ classdef EdgeCloudClass < RouterClass
                 end
             end
             obj.mu=ec_setting.mu;
+            obj.cache_threshold=ec_setting.content;
+            obj.retrieval_time=ec_setting.retrieval_time;
         end
         
         function sendingHandle(obj,~,eventData)
@@ -26,7 +30,7 @@ classdef EdgeCloudClass < RouterClass
                     obj.putInBuffer(eventData.Package);
                 else                          % relay the package
                     fprintf('Package %d is relayed by Edge Cloud %d\n',eventData.Package{1},obj.id);
-                    pause(0.01);             % pretend processing delay+propogation delay
+                    pause(obj.time);             % pretend processing delay+propogation delay
                     index=find(obj.forward(:,2)==eventData.Package{2}{3});
                     eventData.Package{2}{2}=obj.forward(index,1);            % update the next hop destination according to forward map
                     eventData.Package{3}{3}=clock;            % update the time stamp
@@ -106,11 +110,11 @@ classdef EdgeCloudClass < RouterClass
 %                     ave_t = sum(cost)/n; %averave sojourn time
                     for kk=1:nn
                         diff=obj.buffer{ii,jj}{kk}{3}{3}-obj.buffer{ii,jj}{kk}{3}{1};
-                        if obj.buffer{ii,jj}{kk}{4}<=50
+                        if obj.buffer{ii,jj}{kk}{4}<=obj.cache_threshold
                             totalTime=diff(4)*60*60+diff(5)*60+diff(6)+cost(kk);
                             fprintf('Package %d is cache-hitted on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
                         else
-                            totalTime=diff(4)*60*60+diff(5)*60+diff(6)+0.5;
+                            totalTime=diff(4)*60*60+diff(5)*60+diff(6)+obj.retrieval_time;
                             fprintf('Package %d is cache-missed on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
                         end
                         if totalTime>obj.buffer{ii,jj}{kk}{3}{2}

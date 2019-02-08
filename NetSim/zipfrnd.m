@@ -1,4 +1,4 @@
-function [ X ] = zipfrnd( alpha,n,m)
+function [ X,Prob ] = zipfrnd( alpha,n,m)
 %ZIPFRND Random array from zipf distribution.
 %   X = zipfrnd(alpha) returns an array of random numbers chosen from the
 %   zipf distribution with parameter alpha. The mass distribution function is given by 

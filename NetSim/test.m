@@ -43,7 +43,12 @@ para.EdgeCloud=EdgeCloud;
 %% Produce Routers, Mobile Users and Edge Clouds
 % mobile users
 NU=20; %number of users
-interest=zipfrnd(0.8,100,NU);%generate interest content
+[interest,Prob]=zipfrnd(0.8,100,NU);%generate interest content
+for idx=1:100
+    if sum(Prob(1:idx))>=0.8
+        break;
+    end
+end
 end_user=cell(1,NU);
 delay_vector=[0.5,1];
 for ii=1:NU
@@ -66,6 +71,7 @@ for ii=1:length(router_setting)
     router_setting{ii}.connection=neighbors(para.graph, router_setting{ii}.id);
     router_setting{ii}.path=data.path;
     router_setting{ii}.ec=para.EdgeCloud;
+    router_setting{ii}.time=0.01;
     router{ii}=RouterClass(router_setting{ii});
 end
 %edgeclouds
@@ -80,6 +86,10 @@ for ii=1:length(ec_setting)
     ec_setting{ii}.numVM=4;
     ec_setting{ii}.sizeBuffer=size(end_user);
     ec_setting{ii}.mu=20;
+    ec_setting{ii}.time=0.01;
+    ec_setting{ii}.content=idx;
+    ec_setting{ii}.retrieval_time=delay_vector(end);
+    
     edgeclouds{ii}=EdgeCloudClass(ec_setting{ii});
 end
 
