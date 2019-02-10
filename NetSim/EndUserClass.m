@@ -11,6 +11,7 @@ classdef EndUserClass < handle
         ec;                    % retrieved edge cloud;
         server;              % the server in retrieved edge cloud;
         vm;                   % the vm for processing request
+        content_size;    % the size for requested content(MB)
     end
     
     events
@@ -30,6 +31,7 @@ classdef EndUserClass < handle
             obj.ec = user_setting.ec;
             obj.server = user_setting.server;
             obj.vm = user_setting.vm;
+            obj.content_size=user_setting.content_size;
         end
         
         function pos=location(obj, prob, ar)
@@ -74,9 +76,9 @@ classdef EndUserClass < handle
         function produce(obj)
             obj.born_time=clock;
             package={obj.id,...
-                {obj.destination, obj.destination, obj.ec, obj.server, obj.vm}, ... % the second destination means next hop
+                {obj.destination, obj.destination, obj.ec, obj.server, obj.vm, 0}, ... % the second destination means next hop
                 {obj.born_time, obj.delay, obj.born_time},... % the second born_time represents current time stamp
-                obj.interest};  
+                obj.interest, obj.content_size};  
             notify(obj,'sending',DeliveryPackageClass(package));
         end
                

@@ -51,7 +51,8 @@ classdef RouterClass < handle
                     pause(obj.time);             % pretend processing delay+propogation delay
                     index=find(obj.forward(:,2)==eventData.Package{2}{3});
                     eventData.Package{2}{2}=obj.forward(index,1);            % update the next hop destination according to forward map
-                    eventData.Package{3}{3}=clock;            % update the time stamp                    
+                    eventData.Package{3}{3}=clock;            % update the time stamp   
+                    eventData.Package{2}{6}=eventData.Package{2}{6}+1; % update hop counter
                     notify(obj,'sending',DeliveryPackageClass(eventData.Package));
                 end
             end

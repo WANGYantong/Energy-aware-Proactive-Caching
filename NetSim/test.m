@@ -60,6 +60,7 @@ for ii=1:NU
     user_setting.ec=EdgeCloud(randi(2));
     user_setting.server=1;
     user_setting.vm=1;
+    user_setting.content_size=0.2*1024; %unit: MB
     
     end_user{ii}=EndUserClass(user_setting);
 end
@@ -88,7 +89,14 @@ for ii=1:length(ec_setting)
     ec_setting{ii}.mu=20;
     ec_setting{ii}.time=0.01;
     ec_setting{ii}.content=idx;
-    ec_setting{ii}.retrieval_time=delay_vector(end);
+    ec_setting{ii}.retrieval_time=delay_vector(end-1);
+    ec_setting{ii}.retrieval_hop=15;
+    ec_setting{ii}.server_ee=95.92;
+    ec_setting{ii}.vm_ee=16.02;
+    ec_setting{ii}.cache_ee=6.25*10^(-12)*8*1024*1024;
+    ec_setting{ii}.cache_size=10*1024;
+    ec_setting{ii}.time_slot=1*60;
+    ec_setting{ii}.trans_ee=2.63*10^(-8)*8*1024*1024;
     
     edgeclouds{ii}=EdgeCloudClass(ec_setting{ii});
 end
@@ -121,3 +129,10 @@ end
 
 edgeclouds{1}.processBuffer;
 edgeclouds{2}.processBuffer;
+
+transEnergy=zeros(size(edgeclouds));
+totalEnergy=zeros(size(edgeclouds));
+
+for ii=1:length(transEnergy)
+[transEnergy(ii), totalEnergy(ii)]=edgeclouds{ii}.energyEstimate;
+end
