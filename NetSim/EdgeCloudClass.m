@@ -13,19 +13,24 @@ classdef EdgeCloudClass < RouterClass
         cache_size;        % the library size caching in this edge cloud (MB)
         time_slot;          % the period for opening edge cloud(second)
         trans_ee;           % energy efficiency for transmission (Watt per [MB*hop])
-        userNUM=0;
-        cacheHitNUM=0;
-        delaySatisNUM=0;
+        
+        user_num;           % servered user in VM
+        cache_hit_num;   % cache hitted user in VM
+        delay_satis_num; % QoS satisfied user in VM
+        
+        sojourn_total; % total sojourn time of this VM
+        sojourn_mean; % average sojourn time of this VM
+        busy_ratio; % VM busy time probability
     end
     
     methods
         function obj = EdgeCloudClass(ec_setting)
             %EDGE_CLOUD Construct an instance of this class
             obj@RouterClass(ec_setting);
-            obj.buffer=cell(ec_setting.numServer,ec_setting.numVM);
-            for ii=1:ec_setting.numServer
-                for jj=1:ec_setting.numVM
-                    obj.buffer{ii,jj}=cell(ec_setting.sizeBuffer);
+            obj.buffer=cell(ec_setting.num_server,ec_setting.num_vm);
+            for ii=1:ec_setting.num_server
+                for jj=1:ec_setting.num_vm
+                    obj.buffer{ii,jj}=cell(ec_setting.size_buffer);
                 end
             end
             obj.mu=ec_setting.mu;
@@ -38,43 +43,52 @@ classdef EdgeCloudClass < RouterClass
             obj.cache_size=ec_setting.cache_size;
             obj.time_slot=ec_setting.time_slot;
             obj.trans_ee=ec_setting.trans_ee;
+            
+            obj.user_num=zeros(size(obj.buffer));
+            obj.cache_hit_num=zeros(size(obj.buffer));
+            obj.delay_satis_num=zeros(size(obj.buffer));
+            obj.sojourn_total=zeros(size(obj.buffer));
+            obj.sojourn_mean=zeros(size(obj.buffer));
+            obj.busy_ratio=zeros(size(obj.buffer));
         end
         
-        function sendingHandle(obj,~,eventData)
-            if obj.id==eventData.Package{2}{2}  % the package is send to this router
-                if obj.id==eventData.Package{2}{3} % this router is the final destination
-                    fprintf('Package %d is received by Edge Cloud %d\n',eventData.Package{1},obj.id);
-                    obj.putInBuffer(eventData.Package);
-                    obj.userNUM=obj.userNUM+1;
+        function SendingHandle(obj,~,eventData)
+            if obj.id==eventData.package{2}{2}  % the package is send to this router
+                if obj.id==eventData.package{2}{3} % this router is the final destination
+                    fprintf('Package %d is received by Edge Cloud %d\n',eventData.package{1},obj.id);
+                    obj.PutInBuffer(eventData.package);
+                    serverIdx=eventData.package{2}{4};
+                    vmIdx=eventData.package{2}{5}; 
+                    obj.user_num(serverIdx,vmIdx)=obj.user_num(serverIdx,vmIdx)+1;
                 else                          % relay the package
-                    fprintf('Package %d is relayed by Edge Cloud %d\n',eventData.Package{1},obj.id);
+                    fprintf('Package %d is relayed by Edge Cloud %d\n',eventData.package{1},obj.id);
                     pause(obj.time);             % pretend processing delay+propogation delay
-                    index=find(obj.forward(:,2)==eventData.Package{2}{3});
-                    eventData.Package{2}{2}=obj.forward(index,1);            % update the next hop destination according to forward map
-                    eventData.Package{3}{3}=clock;            % update the time stamp
-                    eventData.Package{2}{6}=eventData.Package{2}{6}+1; % update hop counter
-                    notify(obj,'sending',DeliveryPackageClass(eventData.Package));
+                    index=find(obj.forward(:,2)==eventData.package{2}{3});
+                    eventData.package{2}{2}=obj.forward(index,1);            % update the next hop destination according to forward map
+                    eventData.package{3}{3}=clock;            % update the time stamp
+                    eventData.package{2}{6}=eventData.package{2}{6}+1; % update hop counter
+                    notify(obj,'sending',DeliveryPackageClass(eventData.package));
                 end
             end
         end
         
-        function putInBuffer(obj,Package)
-            serverIdx=Package{2}{4};
-            vmIdx=Package{2}{5};        %locate the buffer
-            Package{3}{3}=clock;         %update time stamp 
+        function PutInBuffer(obj,package)
+            serverIdx=package{2}{4};
+            vmIdx=package{2}{5};        %locate the buffer
+            package{3}{3}=clock;         %update time stamp 
             for ii=1:length(obj.buffer{serverIdx,vmIdx})
                 if isempty(obj.buffer{serverIdx,vmIdx}{ii})
-                    obj.buffer{serverIdx,vmIdx}{ii}=Package;
+                    obj.buffer{serverIdx,vmIdx}{ii}=package;
                     break;
                 end
             end
         end
         
-        function processBuffer(obj)
+        function ProcessBuffer(obj)
             for ii=1:size(obj.buffer,1)
                 for jj=1:size(obj.buffer,2)
                     if isempty(obj.buffer{ii,jj}{1})
-                        break;
+                        continue;
                     end
                     
                     nn=0;
@@ -124,32 +138,32 @@ classdef EdgeCloudClass < RouterClass
                     for i = 1:nn
                         cost(i)=c(i)-a(i);    %sojourn time
                     end
-%                     T = c(nn);    %total sojourn time
-%                     p = sum(st)/T; %busy time probability
-%                     ave_t = sum(cost)/n; %averave sojourn time
+                    obj.sojourn_total(ii,jj) = c(nn);    %total sojourn time
+                    obj.busy_ratio(ii,jj) = sum(st)/obj.sojourn_total(ii,jj); %busy time probability
+                    obj.sojourn_mean(ii,jj) = sum(cost)/nn; %averave sojourn time
                     for kk=1:nn
                         diff=obj.buffer{ii,jj}{kk}{3}{3}-obj.buffer{ii,jj}{kk}{3}{1};
                         if obj.buffer{ii,jj}{kk}{4}<=obj.cache_threshold
-                            totalTime=diff(4)*60*60+diff(5)*60+diff(6)+cost(kk);
+                            total_time=diff(4)*60*60+diff(5)*60+diff(6)+cost(kk);
                             fprintf('Package %d is cache-hitted on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
-                            obj.cacheHitNUM=obj.cacheHitNUM+1;
+                            obj.cache_hit_num(ii,jj)=obj.cache_hit_num(ii,jj)+1;
                         else
-                            totalTime=diff(4)*60*60+diff(5)*60+diff(6)+obj.retrieval_time;
+                            total_time=diff(4)*60*60+diff(5)*60+diff(6)+obj.retrieval_time;
                             obj.buffer{ii,jj}{kk}{2}{6}=obj.buffer{ii,jj}{kk}{2}{6}+obj.retrieval_hop;
                             fprintf('Package %d is cache-missed on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
                         end
-                        if totalTime>obj.buffer{ii,jj}{kk}{3}{2}
+                        if total_time>obj.buffer{ii,jj}{kk}{3}{2}
                             fprintf('Package %d is expired when processed by Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
                         else
                             fprintf('Package %d is processed by Edge Cloud %d before deadline\n',obj.buffer{ii,jj}{kk}{1},obj.id);
-                            obj.delaySatisNUM=obj.delaySatisNUM+1;
+                            obj.delay_satis_num(ii,jj)=obj.delay_satis_num(ii,jj)+1;
                         end
                     end
                 end
             end
         end  
         
-        function [trans_energy,total_energy]=energyEstimate(obj)
+        function [trans_energy,total_energy]=EnergyEstimate(obj)
             computing_energy=0;
             caching_energy=0;
             trans_energy=0;
@@ -159,18 +173,18 @@ classdef EdgeCloudClass < RouterClass
             for ii=1:size(obj.buffer,1)
                 for jj=1:size(obj.buffer,2)
                     if isempty(obj.buffer{ii,jj}{1})
-                        break;
+                        continue;
                     end
                     indicator(ii,jj)=1;
                 end
             end  
             
-            serverNUM=length(find(sum(indicator,2)));
-            vmNUM=sum(indicator,'all');
+            server_num=length(find(sum(indicator,2)));
+            vm_num=sum(indicator,'all');
             
-            if serverNUM>0
-                computing_energy=(serverNUM*obj.server_ee+vmNUM*obj.vm_ee)*obj.time_slot;
-                caching_energy=serverNUM*obj.cache_ee*obj.cache_size*obj.time_slot;
+            if server_num>0
+                computing_energy=(server_num*obj.server_ee+vm_num*obj.vm_ee)*obj.time_slot;
+                caching_energy=server_num*obj.cache_ee*obj.cache_size*obj.time_slot;
             end
             
             % energy consumption for transmission
@@ -199,5 +213,6 @@ classdef EdgeCloudClass < RouterClass
         end
         
     end
+    
 end
 

@@ -6,7 +6,7 @@ classdef EndUserClass < handle
         position;           % the access router user connect currently
         destination;      % the access router user may move to after handover
         interest;            % request content
-        born_time;        % request generation moment
+        born_time=0;   % request generation moment
         delay;               % delay tolerance
         ec;                    % retrieved edge cloud;
         server;              % the server in retrieved edge cloud;
@@ -23,10 +23,9 @@ classdef EndUserClass < handle
         function obj = EndUserClass(user_setting)
             %END_USER Construct an instance of this class
             obj.id = user_setting.id;
-            obj.position = obj.location(user_setting.probability, user_setting.access_router);
-            obj.destination = obj.moving(user_setting.probability, user_setting.access_router);
+            obj.position = obj.Location(user_setting.probability, user_setting.access_router);
+            obj.destination = obj.Moving(user_setting.probability, user_setting.access_router);
             obj.interest = user_setting.interest;
-%             obj.born_time = user_setting.born_time;
             obj.delay = user_setting.delay;
             obj.ec = user_setting.ec;
             obj.server = user_setting.server;
@@ -34,7 +33,7 @@ classdef EndUserClass < handle
             obj.content_size=user_setting.content_size;
         end
         
-        function pos=location(obj, prob, ar)
+        function pos=Location(obj, prob, ar)
             res=find(prob);
             if length(res)==3
                 pos=ar(res(2));
@@ -47,7 +46,7 @@ classdef EndUserClass < handle
             end
         end
         
-        function des=moving(obj, prob, ar)
+        function des=Moving(obj, prob, ar)
             desire=rand();
             if obj.position==ar(1)
                 if desire<=prob(1)
@@ -73,7 +72,7 @@ classdef EndUserClass < handle
             end
         end
         
-        function produce(obj)
+        function Produce(obj)
             obj.born_time=clock;
             package={obj.id,...
                 {obj.destination, obj.destination, obj.ec, obj.server, obj.vm, 0}, ... % the second destination means next hop

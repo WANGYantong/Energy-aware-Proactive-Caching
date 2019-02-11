@@ -51,6 +51,9 @@ for idx=1:100
 end
 end_user=cell(1,NU);
 delay_vector=[0.5,1];
+server_vector=1:2;
+vm_vector=1:4;
+
 for ii=1:NU
     user_setting.id=ii;
     user_setting.probability=data.probability_ka(ii,:);
@@ -58,8 +61,8 @@ for ii=1:NU
     user_setting.interest=interest(ii);
     user_setting.delay=delay_vector(randi(2));
     user_setting.ec=EdgeCloud(randi(2));
-    user_setting.server=1;
-    user_setting.vm=1;
+    user_setting.server=server_vector(randi(2));
+    user_setting.vm=vm_vector(randi(4));
     user_setting.content_size=0.2*1024; %unit: MB
     
     end_user{ii}=EndUserClass(user_setting);
@@ -83,9 +86,9 @@ for ii=1:length(ec_setting)
     ec_setting{ii}.connection=neighbors(para.graph, ec_setting{ii}.id);
     ec_setting{ii}.path=data.path;
     ec_setting{ii}.ec=para.EdgeCloud;
-    ec_setting{ii}.numServer=2;
-    ec_setting{ii}.numVM=4;
-    ec_setting{ii}.sizeBuffer=size(end_user);
+    ec_setting{ii}.num_server=2;
+    ec_setting{ii}.num_vm=4;
+    ec_setting{ii}.size_buffer=size(end_user);
     ec_setting{ii}.mu=20;
     ec_setting{ii}.time=0.01;
     ec_setting{ii}.content=idx;
@@ -105,20 +108,20 @@ end
 listening_list=[end_user{1:end}];
 
 for ii=1:3
-    router{ii}.setlistener(listening_list);
+    router{ii}.SetListener(listening_list);
 end
 
-router{4}.setlistener([router{3}]); 
-router{4}.setlistener([edgeclouds{2}]); 
-edgeclouds{1}.setlistener([router{1},router{2}]);
-edgeclouds{1}.setlistener([edgeclouds{2}]);
-edgeclouds{2}.setlistener([router{4}]);
-edgeclouds{2}.setlistener([edgeclouds{1}]);
+router{4}.SetListener([router{3}]); 
+router{4}.SetListener([edgeclouds{2}]); 
+edgeclouds{1}.SetListener([router{1},router{2}]);
+edgeclouds{1}.SetListener([edgeclouds{2}]);
+edgeclouds{2}.SetListener([router{4}]);
+edgeclouds{2}.SetListener([edgeclouds{1}]);
 
 dt=exprnd(1/NU,1,NU);
 
 for ii=1:NU
-    end_user{ii}.produce;
+    end_user{ii}.Produce;
     if ii<NU
         pause(dt(ii));
     else
@@ -127,12 +130,12 @@ for ii=1:NU
 end
 
 
-edgeclouds{1}.processBuffer;
-edgeclouds{2}.processBuffer;
+edgeclouds{1}.ProcessBuffer;
+edgeclouds{2}.ProcessBuffer;
 
 transEnergy=zeros(size(edgeclouds));
 totalEnergy=zeros(size(edgeclouds));
 
 for ii=1:length(transEnergy)
-[transEnergy(ii), totalEnergy(ii)]=edgeclouds{ii}.energyEstimate;
+    [transEnergy(ii), totalEnergy(ii)]=edgeclouds{ii}.EnergyEstimate;
 end

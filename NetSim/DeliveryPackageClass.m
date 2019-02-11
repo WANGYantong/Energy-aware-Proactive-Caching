@@ -1,11 +1,11 @@
 classdef (ConstructOnLoad) DeliveryPackageClass < event.EventData
    properties
-      Package
+      package
    end
    
    methods
       function data = DeliveryPackageClass(delivery)
-         data.Package = delivery;
+         data.package = delivery;
       end
    end
 end
