@@ -53,6 +53,7 @@ data.U_es=ones(length(EdgeCloud),data.N_e)*95.92;
 % power consumption of VM
 data.U_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*16.02;
 
+
 % power efficiency of storage(SSD)
 data.W_C=6.25*10^(-12)*8*1024*1024;
 

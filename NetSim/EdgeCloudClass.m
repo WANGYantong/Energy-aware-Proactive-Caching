@@ -107,7 +107,7 @@ classdef EdgeCloudClass < RouterClass
                             dt(i)=diff(4)*60*60+diff(5)*60+diff(6);
                         end
                     end
-                    st=exprnd(1/obj.mu,1,nn);
+                    st=exprnd(1/obj.mu(ii,jj),1,nn);
                     a = zeros(1,nn);    %arrival time
                     b = zeros(1,nn);    %service time
                     c = zeros(1,nn);    %leaving time

@@ -89,7 +89,7 @@ for ii=1:length(ec_setting)
     ec_setting{ii}.num_server=2;
     ec_setting{ii}.num_vm=4;
     ec_setting{ii}.size_buffer=size(end_user);
-    ec_setting{ii}.mu=20;
+    ec_setting{ii}.mu=20*ones(2,4);
     ec_setting{ii}.time=0.01;
     ec_setting{ii}.content=idx;
     ec_setting{ii}.retrieval_time=delay_vector(end-1);
@@ -105,8 +105,7 @@ for ii=1:length(ec_setting)
 end
 
 % add monitors to events
-listening_list=[end_user{1:end}];
-
+  listening_list=[end_user{1:end}];
 for ii=1:3
     router{ii}.SetListener(listening_list);
 end
