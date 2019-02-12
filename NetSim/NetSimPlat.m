@@ -42,17 +42,17 @@ normal_router=cell(1,length(para.NormalRouter));
 edge_cloud=cell(1,length(para.EdgeCloud));
 
 % container for result of each Monte Carlo loop
-% trans_energy=zeros(1,MonteTIME);
-% cache_energy=zeros(1,MonteTIME);
-% total_energy=zeros(1,MonteTIME);
-% 
-% user_num;           % servered user in VM
-% cache_hit_num;   % cache hitted user in VM
-% delay_satis_num; % QoS satisfied user in VM
-% 
-% sojourn_total; % total sojourn time of this VM
-% sojourn_mean; % average sojourn time of this VM
-% busy_ratio; % VM busy time probability
+trans_energy=zeros(MonteTIME,length(para.EdgeCloud));
+cache_energy=zeros(size(trans_energy));
+total_energy=zeros(size(trans_energy));
+
+user_num=zeros(MonteTIME,length(para.EdgeCloud),data.N_e,data.N_es);            % servered user in VM
+cache_hit_num=zeros(size(user_num));    % cache hitted user in VM
+delay_satis_num=zeros(size(user_num));  % QoS satisfied user in VM
+
+sojourn_total=zeros(size(user_num));      % total sojourn time of this VM
+sojourn_mean=zeros(size(user_num));    % average sojourn time of this VM
+busy_ratio=zeros(size(user_num));          % VM busy time probability
 
 % get the index of ec+server+vm of assignment
 r=zeros(1,NF);
@@ -68,7 +68,7 @@ for nn=1:MonteTIME
     %produce interest content
     [interest,Prob]=zipfrnd(alpha,LibSIZE,NF);
     for idx=1:LibSIZE
-        if sum(Prob(1:idx))>=CacheRATIO
+        if sum(Prob(1:idx))>=data.R
             break;
         end
     end
@@ -170,9 +170,29 @@ for nn=1:MonteTIME
     end
     
     % calculate result
-    
+    for ii=1:length(edge_cloud)
+         [trans_energy(nn,ii),total_energy(nn,ii)]=edge_cloud{ii}.EnergyEstimate;
+         cache_energy(nn,ii)=total_energy(nn,ii)-trans_energy(nn,ii);
+         
+         user_num(nn,ii,:,:)=edge_cloud{ii}.user_num;
+         cache_hit_num(nn,ii,:,:)=edge_cloud{ii}.cache_hit_num;
+         delay_satis_num(nn,ii,:,:)=edge_cloud{ii}.delay_satis_num;
+         sojourn_total(nn,ii,:,:)=edge_cloud{ii}.sojourn_total;
+         sojourn_mean(nn,ii,:,:)=edge_cloud{ii}.sojourn_mean;
+         busy_ratio(nn,ii,:,:)=edge_cloud{ii}.busy_ratio;
+    end
     
 end
+
+result.trans=mean(trans_energy,1);
+result.cache=mean(cache_energy,1);
+result.total=mean(total_energy,1);
+result.user_num=squeeze(mean(user_num,1));
+result.cache_hit_num=squeeze(mean(cache_hit_num,1));
+result.delay_satis_num=squeeze(mean(delay_satis_num,1));
+result.sojourn_total=squeeze(mean(sojourn_total,1));
+result.sojourn_mean=squeeze(mean(sojourn_mean,1));
+result.busy_ratio=squeeze(mean(busy_ratio,1));
 
 end
 

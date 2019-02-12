@@ -34,7 +34,7 @@ data.N_e=2; % number of servers on EC
 data.N_es=4; % number of VMs in servers on EC
 data.SC=10*1024; % size of caching content, Unit: MB
 % data.S_k=randi([5,10],size(flow))*102.4; % size of request content, Unit: MB
-data.S_k=ones(size(flow))*5*102.4;
+data.S_k=ones(size(flow))*2*102.4;
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
 % data.T_k=randi([1,10],size(flow)); % required transmission rate
 data.T_k=ones(size(flow)); 
@@ -82,37 +82,20 @@ para.EdgeCloud=EdgeCloud;
 para.AccessRouter=AccessRouter;
 para.NormalRouter=NormalRouter;
 %% Optimal Solution
-result=cell(NF,3);
-% result_NEC=cell(NF,length(moving_opts));
-buffer=cell(size(result));
-
-% initial point
-% if data.R ~= cache_ratio(1)
-%     if ispc
-%         load('result\result_R6.mat','buffer');
-%     elseif isunix
-%         load('result/result_R6.mat','buffer');
-%     end
-% else
-%     for ii=1:NF
-%         for jj=1:length(moving_opts)
-%             buffer{ii,jj}.sol=[];
-%         end
-%     end
-% end
-
-% for jj=1:length(moving_opts)
-
 data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{4});
 
 time_slot=[1,3,5];
+
+result1=cell(NF,length(time_slot));
+result2=cell(size(result1));
+
 for jj=1:3
     data.DeltaT=60*time_slot(jj);
     parfor ii=1:NF
-        buff=MILP(flow_parallel{ii},data,para,buffer{ii,1});
-        result{ii,jj}=buff;
-        %         buff=NEC(flow_parallel{ii},data,para);
-        %         result_NEC{ii,jj}=buff;
+        buff1=MILP(flow_parallel{ii},data,para);
+        buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi);
+        result1{ii,jj}=buff1;
+        result2{ii,jj}=buff2;
     end
 end
 

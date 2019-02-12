@@ -6,6 +6,8 @@ classdef RouterClass < handle
         connection;          % list for recording connected 
         forward;             % forward table
         time;                  % processing+propagation time
+        
+        debug=1;     % 0 disable screen printf
     end
     
     events
@@ -45,9 +47,13 @@ classdef RouterClass < handle
         function SendingHandle(obj,~,eventData)
             if obj.id==eventData.package{2}{2}  % the package is send to this router                
                 if obj.id==eventData.package{2}{3} % this router is the final destination
-                    fprintf('Package %d is received by Router %d\n',eventData.package{1},obj.id);
-                else                          % relay the package                   
-                    fprintf('Package %d is relayed by Router %d\n',eventData.package{1},obj.id);
+                    if obj.debug
+                        fprintf('Package %d is received by Router %d\n',eventData.package{1},obj.id);
+                    end
+                else                          % relay the package     
+                    if obj.debug
+                        fprintf('Package %d is relayed by Router %d\n',eventData.package{1},obj.id);
+                    end
                     pause(obj.time);             % pretend processing delay+propogation delay
                     index=find(obj.forward(:,2)==eventData.package{2}{3});
                     eventData.package{2}{2}=obj.forward(index,1);            % update the next hop destination according to forward map

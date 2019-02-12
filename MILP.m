@@ -1,7 +1,7 @@
-function  result=MILP(flow,data,para,buffer)
+function  result=MILP(flow,data,para,initial_point)
 
-if isempty(buffer)
-    buffer.sol=[];
+if nargin==3
+    initial_point=[];
 end
 
 %% parameter tailor
@@ -104,7 +104,7 @@ Energy.Constraints.z_constr2=z_constr2;
 opts=optimoptions('intlinprog','Display','off','MaxTime',7200);
 
 tic;
-[sol,fval,exitflag,output]=solve(Energy,buffer.sol,'Options',opts);
+[sol,fval,exitflag,output]=solve(Energy,initial_point,'Options',opts);
 MILP_time=toc;
 
 if isempty(fval)

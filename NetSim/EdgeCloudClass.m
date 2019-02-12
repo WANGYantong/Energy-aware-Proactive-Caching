@@ -55,13 +55,17 @@ classdef EdgeCloudClass < RouterClass
         function SendingHandle(obj,~,eventData)
             if obj.id==eventData.package{2}{2}  % the package is send to this router
                 if obj.id==eventData.package{2}{3} % this router is the final destination
-                    fprintf('Package %d is received by Edge Cloud %d\n',eventData.package{1},obj.id);
+                    if obj.debug
+                        fprintf('Package %d is received by Edge Cloud %d\n',eventData.package{1},obj.id);
+                    end
                     obj.PutInBuffer(eventData.package);
                     serverIdx=eventData.package{2}{4};
                     vmIdx=eventData.package{2}{5}; 
                     obj.user_num(serverIdx,vmIdx)=obj.user_num(serverIdx,vmIdx)+1;
                 else                          % relay the package
-                    fprintf('Package %d is relayed by Edge Cloud %d\n',eventData.package{1},obj.id);
+                    if obj.debug
+                        fprintf('Package %d is relayed by Edge Cloud %d\n',eventData.package{1},obj.id);
+                    end
                     pause(obj.time);             % pretend processing delay+propogation delay
                     index=find(obj.forward(:,2)==eventData.package{2}{3});
                     eventData.package{2}{2}=obj.forward(index,1);            % update the next hop destination according to forward map
@@ -91,13 +95,13 @@ classdef EdgeCloudClass < RouterClass
                         continue;
                     end
                     
-                    nn=0;
-                    while(1)
-                        if isempty(obj.buffer{ii,jj}{nn+1})
+                    for nn=1:length(obj.buffer{ii,jj})
+                        if isempty(obj.buffer{ii,jj}{nn})
                             break;
-                        else
-                            nn=nn+1;
                         end
+                    end
+                    if nn<length(obj.buffer{ii,jj})
+                        nn=nn-1;
                     end
                     
                     dt=zeros(1,nn);
@@ -145,17 +149,25 @@ classdef EdgeCloudClass < RouterClass
                         diff=obj.buffer{ii,jj}{kk}{3}{3}-obj.buffer{ii,jj}{kk}{3}{1};
                         if obj.buffer{ii,jj}{kk}{4}<=obj.cache_threshold
                             total_time=diff(4)*60*60+diff(5)*60+diff(6)+cost(kk);
-                            fprintf('Package %d is cache-hitted on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                            if obj.debug
+                                fprintf('Package %d is cache-hitted on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                            end
                             obj.cache_hit_num(ii,jj)=obj.cache_hit_num(ii,jj)+1;
                         else
                             total_time=diff(4)*60*60+diff(5)*60+diff(6)+obj.retrieval_time;
                             obj.buffer{ii,jj}{kk}{2}{6}=obj.buffer{ii,jj}{kk}{2}{6}+obj.retrieval_hop;
-                            fprintf('Package %d is cache-missed on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                            if obj.debug
+                                fprintf('Package %d is cache-missed on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                            end
                         end
                         if total_time>obj.buffer{ii,jj}{kk}{3}{2}
-                            fprintf('Package %d is expired when processed by Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                            if obj.debug
+                                fprintf('Package %d is expired when processed by Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                            end
                         else
-                            fprintf('Package %d is processed by Edge Cloud %d before deadline\n',obj.buffer{ii,jj}{kk}{1},obj.id);
+                            if obj.debug
+                                fprintf('Package %d is processed by Edge Cloud %d before deadline\n',obj.buffer{ii,jj}{kk}{1},obj.id);
+                            end
                             obj.delay_satis_num(ii,jj)=obj.delay_satis_num(ii,jj)+1;
                         end
                     end
