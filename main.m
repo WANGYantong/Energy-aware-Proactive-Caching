@@ -45,7 +45,7 @@ data.delay_k=repmat(mid_array,1,NF_TOTAL/length(mid_array)); % delay tolerance o
 moving_opts={'RL','RH','RHD','RM','CL','CH','CHD'};
 
 % data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es)*10; 
-data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*30;
+data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*10.5;
 
 % idle power of server, unit: Watt
 data.U_es=ones(length(EdgeCloud),data.N_e)*95.92;
@@ -93,9 +93,9 @@ for jj=1:3
     data.DeltaT=60*time_slot(jj);
     parfor ii=1:NF
         buff1=MILP(flow_parallel{ii},data,para);
-        buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi);
+%         buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
         result1{ii,jj}=buff1;
-        result2{ii,jj}=buff2;
+%         result2{ii,jj}=buff2;
     end
 end
 

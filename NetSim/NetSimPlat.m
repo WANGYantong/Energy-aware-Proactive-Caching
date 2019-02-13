@@ -61,6 +61,7 @@ v=zeros(1,NF);
 for ii=1:NF
     QQ=squeeze(assign(ii,:,:,:));
     [r(ii),c(ii),v(ii)]=ind2sub(size(QQ),find(QQ));
+    r(ii)=para.EdgeCloud(r(ii)); % pair the index and value!!!
 end
 
 for nn=1:MonteTIME
@@ -94,6 +95,7 @@ for nn=1:MonteTIME
         router_setting.connection=neighbors(para.graph, router_setting.id);
         router_setting.path=data.path;
         router_setting.ec=para.EdgeCloud;
+        router_setting.name_table=para.graph.Nodes.Name;
         router_setting.time=ProcessingTIME;
         normal_router{ii}=RouterClass(router_setting);
     end
@@ -104,6 +106,7 @@ for nn=1:MonteTIME
         ec_setting.connection=neighbors(para.graph, ec_setting.id);
         ec_setting.path=data.path;
         ec_setting.ec=para.EdgeCloud;
+        ec_setting.name_table=para.graph.Nodes.Name;
         ec_setting.num_server=data.N_e;
         ec_setting.num_vm=data.N_es;
         ec_setting.size_buffer=size(end_user);
@@ -154,7 +157,8 @@ for nn=1:MonteTIME
     end
     
     % send package of each mobile user
-    dt=exprnd(data.DeltaT/NF,1,NF);
+%     dt=exprnd(data.DeltaT/NF,1,NF);
+    dt=exprnd((data.DeltaT-max(data.delay_k))/NF,1,NF);
     for ii=1:NF
         end_user{ii}.Produce;
         if ii<NF

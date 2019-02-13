@@ -6,8 +6,9 @@ classdef RouterClass < handle
         connection;          % list for recording connected 
         forward;             % forward table
         time;                  % processing+propagation time
+        name_table;
         
-        debug=1;     % 0 disable screen printf
+        debug=0;     % 0 disable screen printf
     end
     
     events
@@ -21,6 +22,7 @@ classdef RouterClass < handle
             obj.id=router_setting.id;
             obj.connection=router_setting.connection;
             obj.forward=obj.Routing(router_setting.path, router_setting.ec);
+            obj.name_table=router_setting.name_table;
             obj.time=router_setting.time;
         end
         
@@ -48,11 +50,11 @@ classdef RouterClass < handle
             if obj.id==eventData.package{2}{2}  % the package is send to this router                
                 if obj.id==eventData.package{2}{3} % this router is the final destination
                     if obj.debug
-                        fprintf('Package %d is received by Router %d\n',eventData.package{1},obj.id);
+                        fprintf('Package %d is received by %s\n',eventData.package{1},obj.name_table{obj.id});
                     end
                 else                          % relay the package     
                     if obj.debug
-                        fprintf('Package %d is relayed by Router %d\n',eventData.package{1},obj.id);
+                        fprintf('Package %d is relayed by %s\n',eventData.package{1},obj.name_table{obj.id});
                     end
                     pause(obj.time);             % pretend processing delay+propogation delay
                     index=find(obj.forward(:,2)==eventData.package{2}{3});
