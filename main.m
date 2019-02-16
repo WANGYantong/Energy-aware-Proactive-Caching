@@ -58,7 +58,8 @@ data.U_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*16.02;
 data.W_C=6.25*10^(-12)*8*1024*1024;
 
 % power efficiency of transmission
-data.W_T=2.63*10^(-8)*8*1024*1024;
+% data.W_T=2.63*10^(-8)*8*1024*1024;
+data.W_T=1.88*10^(-7)*8*1024*1024;
 
 % shortes hop matrix
 data.N=zeros(length(AccessRouter),length(EdgeCloud));
@@ -88,14 +89,18 @@ time_slot=[1,3,5];
 
 result1=cell(NF,length(time_slot));
 result2=cell(size(result1));
+result3=cell(size(result1));
 
 for jj=1:3
     data.DeltaT=60*time_slot(jj);
     parfor ii=1:NF
         buff1=MILP(flow_parallel{ii},data,para);
-%         buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
+        buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
         result1{ii,jj}=buff1;
-%         result2{ii,jj}=buff2;
+        result2{ii,jj}=buff2;
+        buff1=NEC(flow_parallel{ii},data,para);
+        buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
+        result3{ii,jj}=buff2;
     end
 end
 

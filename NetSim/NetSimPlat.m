@@ -59,7 +59,7 @@ r=zeros(1,NF);
 c=zeros(1,NF);
 v=zeros(1,NF);
 for ii=1:NF
-    QQ=squeeze(assign(ii,:,:,:));
+    QQ=round(squeeze(assign(ii,:,:,:)));
     [r(ii),c(ii),v(ii)]=ind2sub(size(QQ),find(QQ));
     r(ii)=para.EdgeCloud(r(ii)); % pair the index and value!!!
 end
