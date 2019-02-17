@@ -2,14 +2,19 @@ clear;
 clc;
 
 result_dense=load('dense.mat');
+result_dense_L=load('dense_L_trans.mat');
 result_sparse=load('sparse.mat');
-Sk=ones(40,1)*5*102.4;
-Wt=2.63*10^(-8)*8*1024*1024;
+result_sparse_L=load('sparse_L_trans.mat');
 
-saving_dense_No=zeros(size(result_dense.result));
-saving_dense_All=zeros(size(result_dense.result));
-saving_sparse_No=zeros(size(result_sparse.result));
-saving_sparse_All=zeros(size(result_sparse.result));
+Sk=ones(40,1)*2*102.4;
+Wt=[2.63*10^(-8)*8*1024*1024;1.88*10^(-7)*8*1024*1024];
+
+saving_dense_No=zeros(size(result_dense.result2));
+saving_dense_All=zeros(size(result_dense.result2));
+saving_dense_No_L=zeros(size(result_dense.result2));
+saving_dense_All_L=zeros(size(result_dense.result2));
+saving_sparse_No=zeros(size(result_sparse.result2));
+saving_sparse_All=zeros(size(result_sparse.result2));
 
 EC_dense=zeros(size(result_dense.result));
 ET_dense=zeros(size(result_dense.result));

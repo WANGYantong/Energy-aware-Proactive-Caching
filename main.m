@@ -4,7 +4,7 @@ clc
 addpath(genpath(pwd));
 rng(1);
 %% Generate Network
-[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(2);
+[G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(1);
 N=length(vertice_names);
 for v=1:N
     eval([vertice_names{v},'=',num2str(v),';']);

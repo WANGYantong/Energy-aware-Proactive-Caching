@@ -203,7 +203,7 @@ classdef EdgeCloudClass < RouterClass
             for ii=1:size(obj.buffer,1)
                 for jj=1:size(obj.buffer,2)
                     if isempty(obj.buffer{ii,jj}{1})
-                        break;
+                        continue;
                     end
                     
                     for nn=1:length(obj.buffer{ii,jj})
