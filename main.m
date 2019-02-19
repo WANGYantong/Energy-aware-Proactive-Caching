@@ -58,8 +58,8 @@ data.U_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*16.02;
 data.W_C=6.25*10^(-12)*8*1024*1024;
 
 % power efficiency of transmission
-data.W_T=2.63*10^(-8)*8*1024*1024;
-% data.W_T=1.88*10^(-7)*8*1024*1024;
+% data.W_T=2.63*10^(-8)*8*1024*1024;
+data.W_T=1.88*10^(-7)*8*1024*1024;
 
 % shortes hop matrix
 data.N=zeros(length(AccessRouter),length(EdgeCloud));
@@ -81,7 +81,7 @@ data.R=cache_ratio(2);
 para.graph=G;
 para.EdgeCloud=EdgeCloud;
 para.AccessRouter=AccessRouter;
-para.NormalRouter=NormalRouter;
+para.NormalRouter=[GW,NormalRouter];
 %% Optimal Solution
 data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{4});
 
@@ -104,6 +104,7 @@ for jj=1:3
     end
 end
 
+save('result\sparse_L_trans.mat','result1','result2','result3');
 % if data.R==cache_ratio(1)
 %     buffer=result;
 %     if ispc

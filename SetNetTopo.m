@@ -50,7 +50,6 @@ switch opts
         figure(1);
         
         G=graph(s,t,weight,vertice_name);
-        G=addedge(G,EC1,EC2,1); %simplify the operation of NetSim since not define GateWay Class
         h=plot(G,'NodeLabel',G.Nodes.Name);
         
         highlight(h,GW,'NodeColor','g','Marker','p','MarkerSize',16);
