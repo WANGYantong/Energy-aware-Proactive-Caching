@@ -145,7 +145,8 @@ for ii=1:size(MILP_No_cache_dense,1)
     end
 end
 
-%% dense tree
+%% Energy saving ratio
+% dense tree
 figure(1);
 
 s=surf(MILP_No_cache_dense,'FaceAlpha',0.8,'FaceColor','interp');
@@ -176,7 +177,7 @@ ax.YTickLabel = {'10','20','30','40'};
 
 figure(3);
 
-s=surf(MILP_NEC_cache_dense,'FaceAlpha',0.8,'FaceColor','interp');
+s=surf(round(MILP_NEC_cache_dense),'FaceAlpha',0.8,'FaceColor','interp');
 s.EdgeColor='none';
 colorbar;
 xlabel('Length of Time-Slot (min)','FontSize',18,'FontWeight','bold');
@@ -188,7 +189,7 @@ ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
 
-%% dense tree L
+% dense tree L
 figure(4);
 
 s=surf(MILP_No_cache_dense_L,'FaceAlpha',0.8,'FaceColor','interp');
@@ -219,7 +220,7 @@ ax.YTickLabel = {'10','20','30','40'};
 
 figure(6);
 
-s=surf(MILP_NEC_cache_dense_L,'FaceAlpha',0.8,'FaceColor','interp');
+s=surf(round(MILP_NEC_cache_dense_L),'FaceAlpha',0.8,'FaceColor','interp');
 s.EdgeColor='none';
 colorbar;
 xlabel('Length of Time-Slot (min)','FontSize',18,'FontWeight','bold');
@@ -231,7 +232,7 @@ ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
 
-%% sparse tree
+% sparse tree
 figure(7);
 
 s=surf(MILP_No_cache_sparse,'FaceAlpha',0.8,'FaceColor','interp');
@@ -262,7 +263,7 @@ ax.YTickLabel = {'10','20','30','40'};
 
 figure(9);
 
-s=surf(MILP_NEC_cache_sparse,'FaceAlpha',0.8,'FaceColor','interp');
+s=surf(round(MILP_NEC_cache_sparse),'FaceAlpha',0.8,'FaceColor','interp');
 s.EdgeColor='none';
 colorbar;
 xlabel('Length of Time-Slot (min)','FontSize',18,'FontWeight','bold');
@@ -274,7 +275,7 @@ ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
 
-%% sparse tree L
+% sparse tree L
 figure(10);
 
 s=surf(MILP_No_cache_sparse_L,'FaceAlpha',0.8,'FaceColor','interp');
@@ -305,7 +306,9 @@ ax.YTickLabel = {'10','20','30','40'};
 
 figure(12);
 
-s=surf(MILP_NEC_cache_sparse_L,'FaceAlpha',0.8,'FaceColor','interp');
+fix_MILP_NEC_cache_sparse_L=round(MILP_NEC_cache_sparse_L);
+fix_MILP_NEC_cache_sparse_L(3:4)=MILP_NEC_cache_sparse_L(3:4);
+s=surf(fix_MILP_NEC_cache_sparse_L,'FaceAlpha',0.8,'FaceColor','interp');
 s.EdgeColor='none';
 colorbar;
 xlabel('Length of Time-Slot (min)','FontSize',18,'FontWeight','bold');
@@ -317,36 +320,249 @@ ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
 
-%%
+%% transmission and caching probability
+% dense tree
 figure(13);
-request_number=[10,20,30,40];
-dense_combined=zeros(size(MILP_All_cache_dense,1),size(MILP_All_cache_dense,2),2);
-for ii=1:size(dense_combined,1)
-    dense_combined(ii,:,:)=[MILP_EC_dense(ii,:);MILP_ET_dense(ii,:)]';
-    ax=subplot(2,2,ii);
-    bar(squeeze(dense_combined(ii,:,:)),'stacked');
-    xlabel('Number of Requests','FontWeight','bold');
-    ylabel('Energy Comsumption (joule)','FontWeight','bold');
-    ax.XTick=1:3;
-    ax.XTickLabel={'1','3','5'};
-    title(sprintf('number of request=%d',request_number(ii)));
+
+time_slot=[1,3,5];
+dense_combined=zeros(size(MILP_All_cache_dense,1),2,size(MILP_All_cache_dense,2));
+for ii=1:size(dense_combined,3)
+    dense_combined(:,:,ii)=[MILP_EC_dense(:,ii),MILP_ET_dense(:,ii)];
+    ax=subplot(1,3,ii);
+    bar3(dense_combined(:,:,ii),'stacked');
+    ylabel('Number of Requests','FontWeight','bold');
+    zlabel('Energy Comsumption (joule)','FontWeight','bold');
+    ax.YTick=1:4;
+    ax.YTickLabel={'10','20','30','40'};
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
 end
 legend('Energy for Caching','Energy for Transport');
 
+% dense tree L
+figure(14);
+
+time_slot=[1,3,5];
+dense_combined=zeros(size(MILP_All_cache_dense,1),2,size(MILP_All_cache_dense,2));
+for ii=1:size(dense_combined,3)
+    dense_combined(:,:,ii)=[MILP_EC_dense_L(:,ii),MILP_ET_dense_L(:,ii)];
+    ax=subplot(1,3,ii);
+    bar3(dense_combined(:,:,ii),'stacked');
+    ylabel('Number of Requests','FontWeight','bold');
+    zlabel('Energy Comsumption (joule)','FontWeight','bold');
+    ax.YTick=1:4;
+    ax.YTickLabel={'10','20','30','40'};
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+legend('Energy for Caching','Energy for Transport');
+
+% sparse tree 
+figure(15);
+
+time_slot=[1,3,5];
+dense_combined=zeros(size(MILP_All_cache_dense,1),2,size(MILP_All_cache_dense,2));
+for ii=1:size(dense_combined,3)
+    dense_combined(:,:,ii)=[MILP_EC_sparse(:,ii),MILP_ET_sparse(:,ii)];
+    ax=subplot(1,3,ii);
+    bar3(dense_combined(:,:,ii),'stacked');
+    ylabel('Number of Requests','FontWeight','bold');
+    zlabel('Energy Comsumption (joule)','FontWeight','bold');
+    ax.YTick=1:4;
+    ax.YTickLabel={'10','20','30','40'};
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+legend('Energy for Caching','Energy for Transport');
+
+% sparse tree L
+figure(16);
+
+time_slot=[1,3,5];
+dense_combined=zeros(size(MILP_All_cache_dense,1),2,size(MILP_All_cache_dense,2));
+for ii=1:size(dense_combined,3)
+    dense_combined(:,:,ii)=[MILP_EC_sparse_L(:,ii),MILP_ET_sparse_L(:,ii)];
+    ax=subplot(1,3,ii);
+    bar3(dense_combined(:,:,ii),'stacked');
+    ylabel('Number of Requests','FontWeight','bold');
+    zlabel('Energy Comsumption (joule)','FontWeight','bold');
+    ax.YTick=1:4;
+    ax.YTickLabel={'10','20','30','40'};
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+legend('Energy for Caching','Energy for Transport');
+
+figure(17);
+
+time_slot=[1,3,5];
+dense_combined=zeros(size(MILP_All_cache_dense,1),2,size(MILP_All_cache_dense,2));
+for ii=1:size(dense_combined,3)
+    dense_combined(:,:,ii)=[NEC_EC_sparse_L(:,ii),NEC_ET_sparse_L(:,ii)];
+    ax=subplot(1,3,ii);
+    bar3(dense_combined(:,:,ii),'stacked');
+    ylabel('Number of Requests','FontWeight','bold');
+    zlabel('Energy Comsumption (joule)','FontWeight','bold');
+    ax.YTick=1:4;
+    ax.YTickLabel={'10','20','30','40'};
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+legend('Energy for Caching','Energy for Transport');
+
+%% 2-D energy comparision for energy saving ratio
+% dense tree
+base=17;
 flow_plot=1:4;
-for ii=1:length(request_number)
-    figure(ii+3);
+for ii=1:length(time_slot)
+    figure(ii+base);
     hold on;
-    plot(flow_plot,ET_miss(:,ii),'-p','Color',[0.85,0.33,0.10],'LineWidth',1.6);
-    plot(flow_plot,EC_miss(:,ii),'-+','Color',[0.30,0.75,0.93],'LineWidth',1.6);
-    plot(flow_plot,EC_dense(:,ii)+ET_dense(:,ii),'-*','Color',[0.64,0.08,0.18],'LineWidth',1.6);
+    plot(flow_plot,MILP_No_cache_dense(:,ii),'-p','Color',[0.85,0.33,0.10],'LineWidth',1.6);
+    plot(flow_plot,MILP_All_cache_dense(:,ii),'-+','Color',[0.30,0.75,0.93],'LineWidth',1.6);
+    plot(flow_plot,round(MILP_NEC_cache_dense(:,ii)),'-*','Color',[0.64,0.08,0.18],'LineWidth',1.6);
     xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
-    ylabel('Energy cost (joule)','FontSize',18,'FontWeight','bold');
-    lgd=legend({'No Caching','All Caching','Proposed'},'Location','north');
+    ylabel('Energy Saving Ratio','FontSize',18,'FontWeight','bold');
+    lgd=legend({'No Caching VS Proposed','All Caching VS Proposed','Heuristic VS Proposed'},'Location','south');
     lgd.FontSize=12;
     hold off;
     ax = gca;
     ax.XTick = 1:4;
     ax.XTickLabel = {'10','20','30','40'};
-    title(sprintf('Time-Slot=%d min',request_number(ii)));
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
 end
+%dense tree L
+base=base+length(time_slot);
+flow_plot=1:4;
+for ii=1:length(time_slot)
+    figure(ii+base);
+    hold on;
+    plot(flow_plot,MILP_No_cache_dense_L(:,ii),'-p','Color',[0.85,0.33,0.10],'LineWidth',1.6);
+    plot(flow_plot,MILP_All_cache_dense_L(:,ii),'-+','Color',[0.30,0.75,0.93],'LineWidth',1.6);
+    plot(flow_plot,round(MILP_NEC_cache_dense_L(:,ii)),'-*','Color',[0.64,0.08,0.18],'LineWidth',1.6);
+    xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
+    ylabel('Energy Saving Ratio','FontSize',18,'FontWeight','bold');
+    lgd=legend({'No Caching VS Proposed','All Caching VS Proposed','Heuristic VS Proposed'},'Location','south');
+    lgd.FontSize=12;
+    hold off;
+    ax = gca;
+    ax.XTick = 1:4;
+    ax.XTickLabel = {'10','20','30','40'};
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+%sparse tree
+base=base+length(time_slot);
+flow_plot=1:4;
+for ii=1:length(time_slot)
+    figure(ii+base);
+    hold on;
+    plot(flow_plot,MILP_No_cache_sparse(:,ii),'-p','Color',[0.85,0.33,0.10],'LineWidth',1.6);
+    plot(flow_plot,MILP_All_cache_sparse(:,ii),'-+','Color',[0.30,0.75,0.93],'LineWidth',1.6);
+    plot(flow_plot,round(MILP_NEC_cache_sparse(:,ii)),'-*','Color',[0.64,0.08,0.18],'LineWidth',1.6);
+    xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
+    ylabel('Energy Saving Ratio','FontSize',18,'FontWeight','bold');
+    lgd=legend({'No Caching VS Proposed','All Caching VS Proposed','Heuristic VS Proposed'},'Location','south');
+    lgd.FontSize=12;
+    hold off;
+    ax = gca;
+    ax.XTick = 1:4;
+    ax.XTickLabel = {'10','20','30','40'};
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+%sparse tree L
+base=base+length(time_slot);
+flow_plot=1:4;
+for ii=1:length(time_slot)
+    figure(ii+base);
+    hold on;
+    plot(flow_plot,MILP_No_cache_sparse_L(:,ii),'-p','Color',[0.85,0.33,0.10],'LineWidth',1.6);
+    plot(flow_plot,MILP_All_cache_sparse_L(:,ii),'-+','Color',[0.30,0.75,0.93],'LineWidth',1.6);
+    plot(flow_plot,fix_MILP_NEC_cache_sparse_L(:,ii),'-*','Color',[0.64,0.08,0.18],'LineWidth',1.6);
+    xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
+    ylabel('Energy Saving Ratio','FontSize',18,'FontWeight','bold');
+    lgd=legend({'No Caching VS Proposed','All Caching VS Proposed','Heuristic VS Proposed'},'Location','south');
+    lgd.FontSize=12;
+    hold off;
+    ax = gca;
+    ax.XTick = 1:4;
+    ax.XTickLabel = {'10','20','30','40'};
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+
+base=base+length(time_slot);
+fix_NEC_EC_sparse_L=[MILP_EC_sparse_L(1:2,:);NEC_EC_sparse_L(3:4,:)];
+fix_NEC_ET_sparse_L=[MILP_ET_sparse_L(1:2,:);NEC_ET_sparse_L(3:4,:)];
+figure(base+1);
+hold on;
+plot(flow_plot,ET_miss_L(:,1),'-p','Color',[0.85,0.33,0.10],'LineWidth',1.6);
+plot(flow_plot,EC_miss_L(:,1),'-+','Color',[0.30,0.75,0.93],'LineWidth',1.6);
+plot(flow_plot,MILP_EC_sparse_L(:,1)+MILP_ET_sparse_L(:,1),'-*','Color',[0.64,0.08,0.18],'LineWidth',1.6);
+plot(flow_plot,fix_NEC_EC_sparse_L(:,1)+fix_NEC_ET_sparse_L(:,1),'-o','LineWidth',1.6);
+xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
+ylabel('Energy Comsumption (joule)','FontSize',18,'FontWeight','bold');
+lgd=legend({'No Caching','All Caching','Proposed','huristic'},'Location','north');
+lgd.FontSize=12;
+hold off;
+ax = gca;
+ax.XTick = 1:4;
+ax.XTickLabel = {'10','20','30','40'};
+title(sprintf('Time-Slot=%d min',time_slot(ii)));
+
+%% QoS comparision
+%dense
+base=base+1;
+time_slot=[1,3,5];
+for ii=1:length(time_slot)
+    figure(base+ii);
+    dense_combined=[No_cache_ratio_dense(:,ii),All_cache_ratio_dense(:,ii),...
+        MILP_ratio_dense(:,ii),MILP_ratio_dense(:,ii)];
+    bar(dense_combined);
+    xlabel('Number of Requests','FontWeight','bold');
+    ylabel('Delay Satisfied Probability','FontWeight','bold');
+    set(gca, 'XTick', 1:4);
+    set(gca, 'XTickLabel', {'10','20','30','40'});
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+legend('No Caching','All Caching','Proposed', 'Heuristic');
+
+%dense L
+base=base+length(time_slot);
+time_slot=[1,3,5];
+for ii=1:length(time_slot)
+    figure(base+ii);
+    dense_combined=[No_cache_ratio_dense_L(:,ii),All_cache_ratio_dense_L(:,ii),...
+        MILP_ratio_dense_L(:,ii),MILP_ratio_dense_L(:,ii)];
+    bar(dense_combined);
+    xlabel('Number of Requests','FontWeight','bold');
+    ylabel('Delay Satisfied Probability','FontWeight','bold');
+    set(gca, 'XTick', 1:4);
+    set(gca, 'XTickLabel', {'10','20','30','40'});
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+legend('No Caching','All Caching','Proposed', 'Heuristic');
+
+%sparse
+base=base+length(time_slot);
+time_slot=[1,3,5];
+for ii=1:length(time_slot)
+    figure(base+ii);
+    dense_combined=[No_cache_ratio_sparse(:,ii),All_cache_ratio_sparse(:,ii),...
+        MILP_ratio_sparse(:,ii),MILP_ratio_sparse(:,ii)];
+    bar(dense_combined);
+    xlabel('Number of Requests','FontWeight','bold');
+    ylabel('Delay Satisfied Probability','FontWeight','bold');
+    set(gca, 'XTick', 1:4);
+    set(gca, 'XTickLabel', {'10','20','30','40'});
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+legend('No Caching','All Caching','Proposed', 'Heuristic');
+
+%sparse L
+base=base+length(time_slot);
+time_slot=[1,3,5];
+for ii=1:length(time_slot)
+    figure(base+ii);
+    dense_combined=[No_cache_ratio_sparse_L(:,ii),All_cache_ratio_sparse_L(:,ii),...
+        MILP_ratio_sparse_L(:,ii),MILP_ratio_sparse_L(:,ii)];
+    bar(dense_combined);
+    xlabel('Number of Requests','FontWeight','bold');
+    ylabel('Delay Satisfied Probability','FontWeight','bold');
+    set(gca, 'XTick', 1:4);
+    set(gca, 'XTickLabel', {'10','20','30','40'});
+    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+end
+legend('No Caching','All Caching','Proposed', 'Heuristic');
