@@ -63,7 +63,7 @@ NEC_ratio_sparse_L=MILP_No_cache_sparse_L;
 
 ET_miss=zeros(size(MILP_No_cache_dense));  %No caching
 ET_miss_L=ET_miss;
-EC_miss=((95.92+16.02)*4+6.25*10^(-12)*8*1024*1024*10*1024)*60*[1,3,5;1,3,5;1,3,5;1,3,5];
+EC_miss=((95.92*6+16.02*10)+6.25*10^(-12)*8*1024*1024*10*1024)*60*[1,3,5;1,3,5;1,3,5;1,3,5];
 EC_miss_L=EC_miss;
 
 for ii=1:size(MILP_No_cache_dense,1)
@@ -188,6 +188,7 @@ ax.XTick = 1:3;
 ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
+zlim([-0.5,0.5]);
 
 % dense tree L
 figure(4);
@@ -231,6 +232,7 @@ ax.XTick = 1:3;
 ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
+zlim([-0.5,0.5]);
 
 % sparse tree
 figure(7);
@@ -274,6 +276,7 @@ ax.XTick = 1:3;
 ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
+zlim([-0.5,0.5]);
 
 % sparse tree L
 figure(10);
@@ -317,6 +320,7 @@ ax.XTick = 1:3;
 ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
+zlim([-0.5,0.5]);
 
 %% transmission and caching probability
 % dense tree
@@ -512,6 +516,7 @@ for ii=1:length(time_slot)
     set(gca, 'XTick', 1:4);
     set(gca, 'XTickLabel', {'10','20','30','40'});
     title(sprintf('Time-Slot=%d min',time_slot(ii)));
+    ylim([0,1.35]);
 end
 legend('No Caching','All Caching','Proposed', 'Heuristic');
 
@@ -528,6 +533,7 @@ for ii=1:length(time_slot)
     set(gca, 'XTick', 1:4);
     set(gca, 'XTickLabel', {'10','20','30','40'});
     title(sprintf('Time-Slot=%d min',time_slot(ii)));
+    ylim([0,1.35]);
 end
 legend('No Caching','All Caching','Proposed', 'Heuristic');
 
@@ -544,6 +550,7 @@ for ii=1:length(time_slot)
     set(gca, 'XTick', 1:4);
     set(gca, 'XTickLabel', {'10','20','30','40'});
     title(sprintf('Time-Slot=%d min',time_slot(ii)));
+    ylim([0,1.35]);
 end
 legend('No Caching','All Caching','Proposed', 'Heuristic');
 
@@ -560,5 +567,53 @@ for ii=1:length(time_slot)
     set(gca, 'XTick', 1:4);
     set(gca, 'XTickLabel', {'10','20','30','40'});
     title(sprintf('Time-Slot=%d min',time_slot(ii)));
+    ylim([0,1.35]);
 end
 legend('No Caching','All Caching','Proposed', 'Heuristic');
+
+%average hop
+load('dense_para.mat');
+load('sparse_para.mat');
+load('NEC.mat');
+
+pi_mid=cell(size(MILP_No_cache_dense));
+MILP_hop_dense=zeros(size(MILP_No_cache_dense));
+NEC_hop_dense=MILP_hop_dense;
+MILP_hop_sparse=NEC_hop_dense;
+NEC_hop_sparse=MILP_hop_sparse;
+for ii=1:size(MILP_No_cache_dense,1)
+    for jj=1:size(MILP_No_cache_dense,2)
+        % dense tree
+        pi_mid{ii,jj}=squeeze(sum(sum(result_dense_L.result1{ii,jj}.sol.pi,4),3));
+        MILP_hop_dense(ii,jj)=(squeeze(sum(pi_mid{ii,jj}*Hop'.*Pro(1:10*ii,:),'all'))*Ratio+15*(1-Ratio)*10*ii)/(10*ii);
+        pi_mid{ii,jj}=squeeze(sum(sum(pi_NECC{ii}.sol.pi,4),3));
+        NEC_hop_dense(ii,jj)=(squeeze(sum(pi_mid{ii,jj}*Hop'.*Pro(1:10*ii,:),'all'))*Ratio+15*(1-Ratio)*10*ii)/(10*ii);
+        %sparse tree
+        pi_mid{ii,jj}=squeeze(sum(sum(result_sparse_L.result1{ii,jj}.sol.pi,4),3));
+        MILP_hop_sparse(ii,jj)=(squeeze(sum(pi_mid{ii,jj}*Hop'.*Pro(1:10*ii,:),'all'))*Ratio+15*(1-Ratio)*10*ii)/(10*ii);
+        pi_mid{ii,jj}=squeeze(sum(sum(pi_NECC_s{ii}.sol.pi,4),3));
+        NEC_hop_sparse(ii,jj)=(squeeze(sum(pi_mid{ii,jj}*Hop'.*Pro(1:10*ii,:),'all'))*Ratio+15*(1-Ratio)*10*ii)/(10*ii);        
+    end
+end
+NoCache_hop=ones(size(MILP_No_cache_dense))*15;
+AllCache_hop=ones(size(MILP_No_cache_dense))*3.8;
+
+base=base+length(time_slot);
+
+flow_plot=1:4;
+figure(base+1);
+hold on;
+plot(flow_plot,NoCache_hop(:,1),'-p','LineWidth',1.6);
+plot(flow_plot,AllCache_hop(:,1),'-+','LineWidth',1.6);
+plot(flow_plot,MILP_hop_dense(:,1),'-*','LineWidth',1.6);
+plot(flow_plot,NEC_hop_dense(:,1),'-o','LineWidth',1.6);
+plot(flow_plot,MILP_hop_sparse(:,1),'-s','LineWidth',1.6);
+plot(flow_plot,NEC_hop_sparse(:,1),'-d','LineWidth',1.6);
+xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
+ylabel('Avg. Hops','FontSize',18,'FontWeight','bold');
+lgd=legend({'No Caching','All Caching','Proposed-Dense','NECC-Dense','Proposed-Sparse','NECC-Sparse'},'Location','north');
+lgd.FontSize=12;
+hold off;
+ax = gca;
+ax.XTick = 1:4;
+ax.XTickLabel = {'10','20','30','40'};
