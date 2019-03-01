@@ -221,9 +221,10 @@ ax.YTickLabel = {'10','20','30','40'};
 
 figure(6);
 
-s=surf(MILP_NEC_cache_dense_L,'FaceAlpha',0.8,'FaceColor','interp');
+s=surf(round(MILP_NEC_cache_dense_L),'FaceAlpha',0.8,'FaceColor','interp');
 s.EdgeColor='none';
 colorbar;
+caxis([-0.09 0.1]);
 xlabel('Length of Time-Slot (min)','FontSize',18,'FontWeight','bold');
 ylabel('Number of Requests','FontSize',18,'FontWeight','bold');
 zlabel('Energy Saving Ratio','FontSize',18,'FontWeight','bold');
@@ -293,6 +294,7 @@ ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
 
+
 figure(11);
 
 s=surf(MILP_All_cache_sparse_L,'FaceAlpha',0.8,'FaceColor','interp');
@@ -307,11 +309,13 @@ ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
 
+
 figure(12);
 
 s=surf(MILP_NEC_cache_sparse_L,'FaceAlpha',0.8,'FaceColor','interp');
 s.EdgeColor='none';
 colorbar;
+caxis([-0.09 0.1]);
 xlabel('Length of Time-Slot (min)','FontSize',18,'FontWeight','bold');
 ylabel('Number of Requests','FontSize',18,'FontWeight','bold');
 zlabel('Energy Saving Ratio','FontSize',18,'FontWeight','bold');
@@ -322,7 +326,7 @@ ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
 zlim([-0.5,0.5]);
 
-%% transmission and caching probability
+%% transmission and caching percentage
 % dense tree
 figure(13);
 
@@ -356,6 +360,7 @@ for ii=1:size(dense_combined,3)
     title(sprintf('Time-Slot=%d min',time_slot(ii)));
 end
 legend('Energy for Caching','Energy for Transport');
+
 
 % sparse tree 
 figure(15);
@@ -522,20 +527,21 @@ legend('No Caching','All Caching','Proposed', 'Heuristic');
 
 %dense L
 base=base+length(time_slot);
-time_slot=[1,3,5];
+% time_slot=[1,3,5];
 for ii=1:length(time_slot)
     figure(base+ii);
     dense_combined=[No_cache_ratio_dense_L(:,ii),All_cache_ratio_dense_L(:,ii),...
         MILP_ratio_dense_L(:,ii),NEC_ratio_dense_L(:,ii)];
     bar(dense_combined);
-    xlabel('Number of Requests','FontWeight','bold');
-    ylabel('Delay Satisfied Probability','FontWeight','bold');
+    xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
+    ylabel('Delay Satisfied Probability','FontSize',18,'FontWeight','bold');
     set(gca, 'XTick', 1:4);
     set(gca, 'XTickLabel', {'10','20','30','40'});
-    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+%     title(sprintf('Time-Slot=%d min',time_slot(ii)));
     ylim([0,1.35]);
+    lgd=legend({'No Caching','All Caching','Optimal','NECC'},'Location','north');
+    lgd.FontSize=18;
 end
-legend('No Caching','All Caching','Proposed', 'Heuristic');
 
 %sparse
 base=base+length(time_slot);
@@ -562,14 +568,15 @@ for ii=1:length(time_slot)
     dense_combined=[No_cache_ratio_sparse_L(:,ii),All_cache_ratio_sparse_L(:,ii),...
         MILP_ratio_sparse_L(:,ii),NEC_ratio_sparse_L(:,ii)];
     bar(dense_combined);
-    xlabel('Number of Requests','FontWeight','bold');
-    ylabel('Delay Satisfied Probability','FontWeight','bold');
+    xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
+    ylabel('Delay Satisfied Probability','FontSize',18,'FontWeight','bold');
     set(gca, 'XTick', 1:4);
     set(gca, 'XTickLabel', {'10','20','30','40'});
-    title(sprintf('Time-Slot=%d min',time_slot(ii)));
+%     title(sprintf('Time-Slot=%d min',time_slot(ii)));
     ylim([0,1.35]);
+    lgd=legend({'No Caching','All Caching','Optimal','NECC'},'Location','north');
+    lgd.FontSize=18;
 end
-legend('No Caching','All Caching','Proposed', 'Heuristic');
 
 %average hop
 load('dense_para.mat');
@@ -603,17 +610,19 @@ base=base+length(time_slot);
 flow_plot=1:4;
 figure(base+1);
 hold on;
-plot(flow_plot,NoCache_hop(:,1),'-p','LineWidth',1.6);
-plot(flow_plot,AllCache_hop(:,1),'-+','LineWidth',1.6);
-plot(flow_plot,MILP_hop_dense(:,1),'-*','LineWidth',1.6);
-plot(flow_plot,NEC_hop_dense(:,1),'-o','LineWidth',1.6);
-plot(flow_plot,MILP_hop_sparse(:,1),'-s','LineWidth',1.6);
-plot(flow_plot,NEC_hop_sparse(:,1),'-d','LineWidth',1.6);
+plot(flow_plot,NoCache_hop(:,1),'-p','LineWidth',2);
+plot(flow_plot,AllCache_hop(:,1),'-+','LineWidth',2);
+plot(flow_plot,MILP_hop_dense(:,1),'-*','LineWidth',2);
+plot(flow_plot,NEC_hop_dense(:,1),'-o','LineWidth',2);
+plot(flow_plot,MILP_hop_sparse(:,1),'-s','LineWidth',2);
+plot(flow_plot,NEC_hop_sparse(:,1),'-d','LineWidth',2);
 xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
 ylabel('Avg. Hops','FontSize',18,'FontWeight','bold');
-lgd=legend({'No Caching','All Caching','Proposed-Dense','NECC-Dense','Proposed-Sparse','NECC-Sparse'},'Location','north');
-lgd.FontSize=12;
+lgd=legend({'No Caching','All Caching','Optimal-Dense','NECC-Dense','Optimal-Sparse','NECC-Sparse'},...
+    'Location','north','NumColumns',3);
+lgd.FontSize=18;
 hold off;
 ax = gca;
 ax.XTick = 1:4;
 ax.XTickLabel = {'10','20','30','40'};
+ylim([2,20]);
