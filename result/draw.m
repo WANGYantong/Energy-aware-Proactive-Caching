@@ -193,7 +193,10 @@ zlim([-0.5,0.5]);
 % dense tree L
 figure(4);
 
-bar3(MILP_No_cache_dense_L, 0.5);
+s=bar3(MILP_No_cache_dense_L, 0.5);
+set(s(1),'facecolor',[0.5,0.5,0.5]);
+set(s(2),'facecolor',[0.8,0.8,0.8]);
+set(s(3),'facecolor',[0.94,0.94,0.94]);
 % s=surf(MILP_No_cache_dense_L,'FaceAlpha',0.8,'FaceColor','interp');
 % s.EdgeColor='none';
 % colorbar;
@@ -205,11 +208,15 @@ ax.XTick = 1:3;
 ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
+set(ax, 'FontSize', 16);
 view([137,5]);
 
 figure(5);
 
-bar3(MILP_All_cache_sparse_L, 0.5);
+s=bar3(MILP_All_cache_sparse_L, 0.5);
+set(s(1),'facecolor',[0.5,0.5,0.5]);
+set(s(2),'facecolor',[0.8,0.8,0.8]);
+set(s(3),'facecolor',[0.94,0.94,0.94]);
 % s=surf(MILP_All_cache_dense_L,'FaceAlpha',0.8,'FaceColor','interp');
 % s.EdgeColor='none';
 % colorbar;
@@ -221,11 +228,15 @@ ax.XTick = 1:3;
 ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
+set(ax,'FontSize',16);
 view([-50,5]);
 
 figure(6);
 
-bar3(round(MILP_NEC_cache_dense_L), 0.5);
+s=bar3(round(MILP_NEC_cache_dense_L), 0.5);
+set(s(1),'facecolor',[0.5,0.5,0.5]);
+set(s(2),'facecolor',[0.8,0.8,0.8]);
+set(s(3),'facecolor',[0.94,0.94,0.94]);
 % s=surf(round(MILP_NEC_cache_dense_L),'FaceAlpha',0.8,'FaceColor','interp');
 % s.EdgeColor='none';
 % colorbar;
@@ -238,6 +249,7 @@ ax.XTick = 1:3;
 ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
+set(ax,'FontSize',16);
 % zlim([-0.5,0.5]);
 view([137,5]);
 
@@ -288,7 +300,10 @@ zlim([-0.5,0.5]);
 % sparse tree L
 figure(10);
 
-bar3(MILP_No_cache_sparse_L, 0.5);
+s=bar3(MILP_No_cache_sparse_L, 0.5);
+set(s(1),'facecolor',[0.5,0.5,0.5]);
+set(s(2),'facecolor',[0.8,0.8,0.8]);
+set(s(3),'facecolor',[0.94,0.94,0.94]);
 % s=surf(MILP_No_cache_sparse_L,'FaceAlpha',0.8,'FaceColor','interp');
 % s.EdgeColor='none';
 % colorbar;
@@ -305,7 +320,10 @@ view([137,5]);
 
 figure(11);
 
-bar3(MILP_All_cache_sparse_L,0.5);
+s=bar3(MILP_All_cache_sparse_L,0.5);
+set(s(1),'facecolor',[0.5,0.5,0.5]);
+set(s(2),'facecolor',[0.8,0.8,0.8]);
+set(s(3),'facecolor',[0.94,0.94,0.94]);
 % s=surf(MILP_All_cache_sparse_L,'FaceAlpha',0.8,'FaceColor','interp');
 % s.EdgeColor='none';
 % colorbar;
@@ -324,7 +342,10 @@ figure(12);
 
 fix_MILP_NEC_cache_sparse_L=zeros(size(MILP_NEC_cache_sparse_L));
 fix_MILP_NEC_cache_sparse_L(3:4,1)=MILP_NEC_cache_sparse_L(3:4,1);
-bar3(fix_MILP_NEC_cache_sparse_L,0.5);
+s=bar3(fix_MILP_NEC_cache_sparse_L,0.5);
+set(s(1),'facecolor',[0.5,0.5,0.5]);
+set(s(2),'facecolor',[0.8,0.8,0.8]);
+set(s(3),'facecolor',[0.94,0.94,0.94]);
 % s=surf(fix_MILP_NEC_cache_sparse_L,'FaceAlpha',0.8,'FaceColor','interp');
 % s.EdgeColor='none';
 % colorbar;
@@ -338,6 +359,7 @@ ax.XTickLabel = {'1','3','5'};
 ax.YTick = 1:4;
 ax.YTickLabel = {'10','20','30','40'};
 % zlim([-0.5,0.5]);
+set(ax,'FontSize',16);
 view([137,5]);
 
 %% transmission and caching percentage
@@ -367,7 +389,9 @@ for ii=1:size(dense_combined,3)
     dense_combined(:,:,ii)=[MILP_EC_dense_L(:,ii),MILP_ET_dense_L(:,ii)];
 %     ax=subplot(1,3,ii);
     figure(13+ii);
-    bar(dense_combined(:,:,ii),0.5,'stacked');
+    s=bar(dense_combined(:,:,ii),0.5,'stacked');
+    s(1).FaceColor=[0.5,0.5,0.5];
+    s(2).FaceColor=[0.8,0.8,0.8];
     xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
     ylabel('Energy Comsumption (joule)','FontSize',18,'FontWeight','bold');
     xt = get(gca, 'XTick');
@@ -407,7 +431,9 @@ for ii=1:size(sparse_combined,3)
     sparse_combined(:,:,ii)=[MILP_EC_sparse_L(:,ii),MILP_ET_sparse_L(:,ii)];
 %     ax=subplot(1,3,ii);
     figure(15+ii);
-    bar(sparse_combined(:,:,ii),0.5,'stacked');
+    s=bar(sparse_combined(:,:,ii),0.5,'stacked');
+    s(1).FaceColor=[0.5,0.5,0.5];
+    s(2).FaceColor=[0.8,0.8,0.8];
     xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
     ylabel('Energy Comsumption (joule)','FontSize',18,'FontWeight','bold');
 %     ax.YTick=1:4;
@@ -428,7 +454,9 @@ for ii=1:size(dense_combined,3)
     dense_combined(:,:,ii)=[NEC_EC_sparse_L(:,ii),NEC_ET_sparse_L(:,ii)];
     figure(17+ii);
 %     ax=subplot(1,3,ii);
-    bar(dense_combined(:,:,ii),0.5,'stacked');
+    s=bar(dense_combined(:,:,ii),0.5,'stacked');
+    s(1).FaceColor=[0.5,0.5,0.5];
+    s(2).FaceColor=[0.8,0.8,0.8];
     xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
     ylabel('Energy Comsumption (joule)','FontSize',18,'FontWeight','bold');
 %     ax.YTick=1:4;
