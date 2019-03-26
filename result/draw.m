@@ -675,7 +675,7 @@ plot(flow_plot,log(MILP_hop_sparse(:,1)),'-^','LineWidth',2,'MarkerSize',10);
 plot(flow_plot,log(NEC_hop_sparse(:,1)),'-d','LineWidth',2,'MarkerSize',10);
 xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
 ylabel('ln(Avg. Hops)','FontSize',18,'FontWeight','bold');
-lgd=legend({'No Caching','All Caching','Optimal-Dense','NECC-Dense','Optimal-Sparse','NECC-Sparse'},...
+lgd=legend({'No Caching','All Caching','EECQG-Dense','NECC-Dense','EECQG-Sparse','NECC-Sparse'},...
     'Location','north','NumColumns',3);
 lgd.FontSize=18;
 hold off;
@@ -695,7 +695,7 @@ plot(flow_plot,log(MILP_hop_sparse(:,2)),'-^','LineWidth',2,'MarkerSize',10);
 plot(flow_plot,log(NEC_hop_sparse(:,2)),'-d','LineWidth',2,'MarkerSize',10);
 xlabel('Number of Requests','FontSize',18,'FontWeight','bold');
 ylabel('ln(Avg. Hops)','FontSize',18,'FontWeight','bold');
-lgd=legend({'No Caching','All Caching','Optimal-Dense','NECC-Dense','Optimal-Sparse','NECC-Sparse'},...
+lgd=legend({'No Caching','All Caching','EECQG-Dense','NECC-Dense','EECQG-Sparse','NECC-Sparse'},...
     'Location','north','NumColumns',3);
 lgd.FontSize=18;
 hold off;
