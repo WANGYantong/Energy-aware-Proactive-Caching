@@ -19,6 +19,8 @@ function result = NetSimPlat(flow, data, para, assign,...
 %               
 %
 
+rng(2);
+
 if nargin<4
     error('Not Enough Input Arguements!');
 end
@@ -88,7 +90,7 @@ for nn=1:MonteTIME
         
         end_user{ii}=EndUserClass(user_setting);
     end
-    
+       
     % construct normal routers 
     for ii=1:length(normal_router)
         router_setting.id=para.NormalRouter(ii);
@@ -197,6 +199,8 @@ result.delay_satis_num=squeeze(mean(delay_satis_num,1));
 result.sojourn_total=squeeze(mean(sojourn_total,1));
 result.sojourn_mean=squeeze(mean(sojourn_mean,1));
 result.busy_ratio=squeeze(mean(busy_ratio,1));
+
+result.ZD=ZD;
 
 end
 

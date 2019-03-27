@@ -26,7 +26,7 @@ flow_parallel=cell(NF,1);
 for ii=1:NF
     flow_parallel{ii}=flow(1:ii*step);
 end
-
+ 
 %% Produce Netwrok Parameters
 %%%%%% relax the bandwidth constraint currently %%%%%%
 
@@ -91,14 +91,14 @@ result1=cell(NF,length(time_slot));
 result2=cell(size(result1));
 result3=cell(size(result1));
 
-load('result\sparse.mat');
+% load('result\sparse.mat');
 
 for jj=1:3
     data.DeltaT=60*time_slot(jj);
     parfor ii=1:NF
-%         buff1=MILP(flow_parallel{ii},data,para);
+        buff1=MILP(flow_parallel{ii},data,para);
 %         buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
-%         result1{ii,jj}=buff1;
+        result1{ii,jj}=buff1;
         buff2=NetSimPlat(flow_parallel{ii},data,para,result1{ii,jj}.sol.pi,100);
         result2{ii,jj}=buff2;
         buff1=NEC(flow_parallel{ii},data,para);
