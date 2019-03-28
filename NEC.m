@@ -1,4 +1,6 @@
 function result=NEC(flow,data,para,opts)
+% opts.prior=1 - has prior knowledge of user movement;
+% opts.prior=0 - no prior knowledge
 
 if nargin<3
     error('Not Enough Input Arguements!');

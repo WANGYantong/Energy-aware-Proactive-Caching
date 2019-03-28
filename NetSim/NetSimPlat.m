@@ -99,6 +99,7 @@ for nn=1:MonteTIME
         router_setting.ec=para.EdgeCloud;
         router_setting.name_table=para.graph.Nodes.Name;
         router_setting.time=ProcessingTIME;
+        
         normal_router{ii}=RouterClass(router_setting);
     end
     
