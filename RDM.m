@@ -27,19 +27,22 @@ end
 
 if opts.method==0
     indicator=zeros(size(para.EdgeCloud));
-    for ii=1:length(para.EdgeCloud)
+    for ii=1:length(para.AccessRouter)
         candidates=intersect(find(path_RDM{ii}>=para.EdgeCloud(1)), ...
             find(path_RDM{ii}<=para.EdgeCloud(end))); % when edgeclouds are coded continuesly
-%         if strfind(para.EdgeCloud, candidates)
-%             continue;
-%         else
-            winner=candidates(randperm(numel(candidates)));
-            indicator(find(winner==para.EdgeCloud))=1;
-%         end
+        if isempty(intersect(path_RDM{ii}(candidates),para.EdgeCloud(find(indicator))))
+            index=randperm(numel(candidates));
+            winner=path_RDM{ii}(candidates(index(1)));
+            indicator(winner==para.EdgeCloud)=1;
+        else
+            continue;
+        end
     end
 else
     
 end
 
 end
+
+
 
