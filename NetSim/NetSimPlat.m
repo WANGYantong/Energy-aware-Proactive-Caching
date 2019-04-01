@@ -1,4 +1,4 @@
-function result = NetSimPlat(flow, data, para, assign,...
+function result = NetSimPlat(on_path,flow, data, para, assign,...
     MonteTIME, alpha, LibSIZE, ProcessingTIME)
 %NETSIMPLAT Summary of this function goes here
 %   A RAN simulator based on OOP.
@@ -14,6 +14,7 @@ function result = NetSimPlat(flow, data, para, assign,...
 %               LibSIZE: total number of contents hosted in data server
 %               CacheRATIO:
 %               ProcessingTIME:
+%               opt.on_path:1 on path caching; 0 off path caching
 %
 %   Output:
 %               
@@ -21,19 +22,19 @@ function result = NetSimPlat(flow, data, para, assign,...
 
 rng(2);
 
-if nargin<4
+if nargin<5
     error('Not Enough Input Arguements!');
 end
-if nargin<=7
+if nargin<=8
     ProcessingTIME=0.01;
 end
-if nargin <= 6
+if nargin <= 7
     LibSIZE=100;
 end
-if nargin <= 5
+if nargin <= 6
     alpha=0.8;
 end
-if nargin <=4
+if nargin <=5
     MonteTIME=1000;
 end
     
@@ -56,14 +57,21 @@ sojourn_total=zeros(size(user_num));      % total sojourn time of this VM
 sojourn_mean=zeros(size(user_num));    % average sojourn time of this VM
 busy_ratio=zeros(size(user_num));          % VM busy time probability
 
-% get the index of ec+server+vm of assignment
-r=zeros(1,NF);
-c=zeros(1,NF);
-v=zeros(1,NF);
-for ii=1:NF
-    QQ=round(squeeze(assign(ii,:,:,:)));
-    [r(ii),c(ii),v(ii)]=ind2sub(size(QQ),find(QQ));
-    r(ii)=para.EdgeCloud(r(ii)); % pair the index and value!!!
+if on_path==0 % get the index of ec+server+vm of assignment
+    r=zeros(1,NF);
+    c=zeros(1,NF);
+    v=zeros(1,NF);
+    for ii=1:NF
+        QQ=round(squeeze(assign(ii,:,:,:)));
+        [r(ii),c(ii),v(ii)]=ind2sub(size(QQ),find(QQ));
+        r(ii)=para.EdgeCloud(r(ii)); % pair the index and value!!!
+    end
+else                       % get the route matrix for on-path caching
+    GW=para.NormalRouter(1); % the first element in NormalRouter is GateWay in main.m
+    path_RDM=cell(size(para.AccessRouter));
+    for ii=1:length(para.AccessRouter)
+        path_RDM{ii}=shortestpath(para.graph, para.AccessRouter(ii), GW);
+    end
 end
 
 for nn=1:MonteTIME
@@ -83,10 +91,20 @@ for nn=1:MonteTIME
         user_setting.access_router=para.AccessRouter;
         user_setting.interest=interest(ii);
         user_setting.delay=data.delay_k(ii);
-        user_setting.ec=r(ii);
-        user_setting.server=c(ii);
-        user_setting.vm=v(ii);
+        if on_path==0
+            user_setting.ec=r(ii);
+            user_setting.server=c(ii);
+            user_setting.vm=v(ii);
+        else
+            user_setting.path=path_RDM;
+            user_setting.server=data.N_e;
+            user_setting.VM=data.N_es;
+            user_setting.AccessRouter=para.AccessRouter;
+            user_setting.EdgeCloud=para.EdgeCloud;
+            user_setting.assign=assign; % the indicator in RDM.m
+        end
         user_setting.content_size=data.S_k(ii);
+        user_setting.opt=on_path;
         
         end_user{ii}=EndUserClass(user_setting);
     end
@@ -200,8 +218,6 @@ result.delay_satis_num=squeeze(mean(delay_satis_num,1));
 result.sojourn_total=squeeze(mean(sojourn_total,1));
 result.sojourn_mean=squeeze(mean(sojourn_mean,1));
 result.busy_ratio=squeeze(mean(busy_ratio,1));
-
-result.ZD=ZD;
 
 end
 

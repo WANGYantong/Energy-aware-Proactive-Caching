@@ -39,8 +39,10 @@ if opts.method==0
         end
     end
 else
-    
+    % this branch is to be continued 
 end
+
+result=indicator;
 
 end
 

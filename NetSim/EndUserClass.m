@@ -27,9 +27,17 @@ classdef EndUserClass < handle
             obj.destination = obj.Moving(user_setting.probability, user_setting.access_router);
             obj.interest = user_setting.interest;
             obj.delay = user_setting.delay;
-            obj.ec = user_setting.ec;
-            obj.server = user_setting.server;
-            obj.vm = user_setting.vm;
+            if user_setting.opt==0
+                obj.ec = user_setting.ec;
+                obj.server = user_setting.server;
+                obj.vm = user_setting.vm;
+            else
+                obj.server=mod(user_setting.id,user_setting.server)+1;
+                obj.vm=mod(floor(user_setting.id/user_setting.server),user_setting.VM)+1;
+                path=user_setting.path{user_setting.AccessRouter==obj.destination};
+                candidates=intersect(path, user_setting.EdgeCloud(find(user_setting.assign)));
+                obj.ec=candidates(1);
+            end
             obj.content_size=user_setting.content_size;
         end
         

@@ -17,7 +17,7 @@ end
 
 %Request Flow
 step=10;
-flow=1:40;
+flow=1:400;
 NF=length(flow)/step;
 
 NF_TOTAL=500;
@@ -90,7 +90,7 @@ time_slot=[1,3,5];
 result1=cell(NF,length(time_slot));
 result2=cell(size(result1));
 result3=cell(size(result1));
-
+result4=cell(size(result1));
 % load('result\sparse.mat');
 
 for jj=1:3
@@ -99,11 +99,16 @@ for jj=1:3
         buff1=MILP(flow_parallel{ii},data,para);
 %         buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
         result1{ii,jj}=buff1;
-        buff2=NetSimPlat(flow_parallel{ii},data,para,result1{ii,jj}.sol.pi,100);
+        buff2=NetSimPlat(0,flow_parallel{ii},data,para,result1{ii,jj}.sol.pi,100);
         result2{ii,jj}=buff2;
+        
         buff1=NEC(flow_parallel{ii},data,para);
-        buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,100);
+        buff2=NetSimPlat(0,flow_parallel{ii},data,para,buff1.sol.pi,10);
         result3{ii,jj}=buff2;
+        
+        buff1=RDM(flow_parallel{ii},data,para);       
+        buff2=NetSimPlat(1,flow_parallel{ii},data,para,buff1,10);
+        result4{ii,jj}=buff2;        
     end
 end
 
