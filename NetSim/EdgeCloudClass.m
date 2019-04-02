@@ -150,23 +150,23 @@ classdef EdgeCloudClass < RouterClass
                         if obj.buffer{ii,jj}{kk}{4}<=obj.cache_threshold
                             total_time=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6)+cost(kk);
                             if obj.debug
-                                fprintf('Package %d is cache-hitted on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                                fprintf('Package %d is cache-hitted on %s\n', obj.buffer{ii,jj}{kk}{1},obj.name_table{obj.id});
                             end
                             obj.cache_hit_num(ii,jj)=obj.cache_hit_num(ii,jj)+1;
                         else
                             total_time=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6)+obj.retrieval_time;
                             obj.buffer{ii,jj}{kk}{2}{6}=obj.buffer{ii,jj}{kk}{2}{6}+obj.retrieval_hop;
                             if obj.debug
-                                fprintf('Package %d is cache-missed on Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                                fprintf('Package %d is cache-missed on %s\n', obj.buffer{ii,jj}{kk}{1},obj.name_table{obj.id});
                             end
                         end
                         if total_time>obj.buffer{ii,jj}{kk}{3}{2}
                             if obj.debug
-                                fprintf('Package %d is expired when processed by Edge Cloud %d\n', obj.buffer{ii,jj}{kk}{1},obj.id);
+                                fprintf('Package %d is expired when processed by %s\n', obj.buffer{ii,jj}{kk}{1},obj.name_table{obj.id});
                             end
                         else
                             if obj.debug
-                                fprintf('Package %d is processed by Edge Cloud %d before deadline\n',obj.buffer{ii,jj}{kk}{1},obj.id);
+                                fprintf('Package %d is processed by %s before deadline\n',obj.buffer{ii,jj}{kk}{1},obj.name_table{obj.id});
                             end
                             obj.delay_satis_num(ii,jj)=obj.delay_satis_num(ii,jj)+1;
                         end
