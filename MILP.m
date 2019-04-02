@@ -39,7 +39,7 @@ open_constr2=pi<=x_pi;
 
 route_constr=sum(sum(sum(pi,4),3),2)==1;
 
-queue_constr=squeeze(sum(pi,1))<=data.mu_esv;
+queue_constr=squeeze(sum(pi,1))<=data.DeltaT*data.mu_esv;
 
 M=1000;
 phi_constr1=phi<=M*pi;
@@ -50,7 +50,7 @@ omega_pi=reshape(omega_pi,NF,m,n,l);
 phi_constr2=phi<=omega_pi;
 phi_constr3=phi>=M*(pi-1)+omega_pi;
 
-linear_constr=data.mu_esv.*omega-squeeze(sum(phi,1))==1;
+linear_constr=data.mu_esv.*omega-(1/data.DeltaT)*squeeze(sum(phi,1))==1;
 
 delay_constr=sum(sum(sum(phi,4),3),2)<=data.delay_k';
 

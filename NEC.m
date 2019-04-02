@@ -31,11 +31,13 @@ ec_index=II(pointer);
 server_index=1;
 vm_index=1;
 
+indicator=data.mu_esv*data.DeltaT-data.DeltaT/min(data.delay_k);
+
 for ii=1:NF
-    if data.mu_esv(ec_index, server_index, vm_index)>1
+    if indicator(ec_index, server_index, vm_index)>1
         result.sol.pi(ii,ec_index,server_index,vm_index)=1;
-        data.mu_esv(ec_index, server_index, vm_index)=...
-            data.mu_esv(ec_index, server_index, vm_index)-1;
+        indicator(ec_index, server_index, vm_index)=...
+            indicator(ec_index, server_index, vm_index)-1;
     else
         if vm_index<data.N_es
             vm_index=vm_index+1;
@@ -49,8 +51,8 @@ for ii=1:NF
             vm_index=1;
         end
         result.sol.pi(ii,ec_index,server_index,vm_index)=1;
-        data.mu_esv(ec_index, server_index, vm_index)=...
-            data.mu_esv(ec_index, server_index, vm_index)-1;
+        indicator(ec_index, server_index, vm_index)=...
+            indicator(ec_index, server_index, vm_index)-1;
     end    
 end
 

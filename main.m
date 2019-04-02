@@ -38,14 +38,14 @@ data.S_k=ones(size(flow))*2*102.4;
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
 % data.T_k=randi([1,10],size(flow)); % required transmission rate
 data.T_k=ones(size(flow)); 
-mid_array=[5,5,5,5,5,10,10,10,10,10];
+mid_array=[0.5,0.5,0.5,1,1,1,1,2,2,2];
 data.delay_k=repmat(mid_array,1,NF_TOTAL/length(mid_array)); % delay tolerance of flow
 
 % user movement probability option
 moving_opts={'RL','RH','RHD','RM','CL','CH','CHD'};
 
 % data.mu_esv=randi([2,4],length(EdgeCloud),data.N_e,data.N_es)*10; 
-data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*10.5;
+data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*2.2;
 
 % idle power of server, unit: Watt
 data.U_es=ones(length(EdgeCloud),data.N_e)*95.92;
@@ -99,15 +99,15 @@ for jj=1:3
         buff1=MILP(flow_parallel{ii},data,para);
 %         buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
         result1{ii,jj}=buff1;
-        buff2=NetSimPlat(0,flow_parallel{ii},data,para,result1{ii,jj}.sol.pi,100);
+        buff2=NetSimPlat(0,flow_parallel{ii},data,para,result1{ii,jj}.sol.pi,1);
         result2{ii,jj}=buff2;
         
         buff1=NEC(flow_parallel{ii},data,para);
-        buff2=NetSimPlat(0,flow_parallel{ii},data,para,buff1.sol.pi,10);
+        buff2=NetSimPlat(0,flow_parallel{ii},data,para,buff1.sol.pi,1);
         result3{ii,jj}=buff2;
         
         buff1=RDM(flow_parallel{ii},data,para);       
-        buff2=NetSimPlat(1,flow_parallel{ii},data,para,buff1,10);
+        buff2=NetSimPlat(1,flow_parallel{ii},data,para,buff1,1);
         result4{ii,jj}=buff2;        
     end
 end
