@@ -17,7 +17,7 @@ end
 
 %Request Flow
 step=10;
-flow=1:400;
+flow=1:500;
 NF=length(flow)/step;
 
 NF_TOTAL=500;
@@ -103,11 +103,11 @@ for jj=1:3
         result2{ii,jj}=buff2;
         
         buff1=NEC(flow_parallel{ii},data,para);
-        buff2=NetSimPlat(0,flow_parallel{ii},data,para,buff1.sol.pi,1);
+        buff2=NetSimPlat(0,flow_parallel{ii},data,para,buff1.sol.pi,100);
         result3{ii,jj}=buff2;
         
         buff1=RDM(flow_parallel{ii},data,para);       
-        buff2=NetSimPlat(1,flow_parallel{ii},data,para,buff1,1);
+        buff2=NetSimPlat(1,flow_parallel{ii},data,para,buff1,100);
         result4{ii,jj}=buff2;        
     end
 end

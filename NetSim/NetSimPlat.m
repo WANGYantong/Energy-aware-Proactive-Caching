@@ -180,6 +180,7 @@ for nn=1:MonteTIME
     % send package of each mobile user
 %     dt=exprnd(data.DeltaT/NF,1,NF);
     dt=exprnd((data.DeltaT-max(data.delay_k))/NF,1,NF);
+%     dt=(data.DeltaT-max(data.delay_k))/NF*ones(1,NF);
     for ii=1:NF
         end_user{ii}.Produce;
         if ii<NF
