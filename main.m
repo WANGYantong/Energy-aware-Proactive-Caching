@@ -115,7 +115,7 @@ for jj=1:3
     end
 end
 
-save('result\sparse.mat','result1','result2','result3');
+save('result\sparse.mat','result1','result2','result3','result4');
 % if data.R==cache_ratio(1)
 %     buffer=result;
 %     if ispc
