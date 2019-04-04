@@ -31,8 +31,8 @@ ec_index=II(pointer);
 server_index=1;
 vm_index=1;
 
-indicator=data.mu_esv*data.DeltaT-data.DeltaT/min(data.delay_k);
-% indicator=data.mu_esv;
+% indicator=data.mu_esv*data.DeltaT-data.DeltaT/min(data.delay_k);
+indicator=data.mu_esv;
 
 for ii=1:NF
     if indicator(ec_index, server_index, vm_index)>1
@@ -47,9 +47,9 @@ for ii=1:NF
             vm_index=1;
         else
             pointer=pointer+1;
-            if pointer >6 
-                pointer;
-            end
+%             if pointer >6 
+%                 pointer;
+%             end
             ec_index=II(pointer);
             server_index=1;
             vm_index=1;

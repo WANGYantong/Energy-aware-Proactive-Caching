@@ -8,7 +8,7 @@ classdef RouterClass < handle
         time;                  % processing+propagation time
         name_table;
         
-        debug=0;     % 0 disable screen printf
+        debug=1;     % 0 disable screen printf
     end
     
     events
