@@ -1,4 +1,4 @@
-function probability = GnrMovPro(NF,NA,opts)
+function probability = GnrMovPro(NF,NA,opts,cheat)
 %GnrMovPro return the probability of mobile users movement
 %
 %   Input variables:
@@ -17,9 +17,11 @@ function probability = GnrMovPro(NF,NA,opts)
 %   Output variables:
 %       probability: the probability of mobile users moving to which
 %                       access_router
-
-if nargin ~= 3
-    error('Error. \n Illegal input number')
+if nargin < 3
+    error('Not Enough Input Arguements!');
+end
+if nargin <= 3 
+    cheat=0;
 end
 
 rng(1);
@@ -115,7 +117,11 @@ switch opts
         end
         
     case 'CL'
-        [base,label]=SetBase(NA);
+        if cheat==0
+            [base,label]=SetBase(NA);
+        else
+            base=2; label=2;
+        end
         for ii=1:NF
             probability(ii,base)=1;
             if label==1

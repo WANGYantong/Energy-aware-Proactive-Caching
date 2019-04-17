@@ -32,11 +32,13 @@ classdef EndUserClass < handle
                 obj.server = user_setting.server;
                 obj.vm = user_setting.vm;
             else
-                obj.server=mod(user_setting.id,user_setting.server)+1;
-                obj.vm=mod(floor(user_setting.id/user_setting.server),user_setting.VM)+1;
+%                 obj.server=mod(user_setting.id,user_setting.server)+1;
+                obj.server=1;
+%                 obj.vm=mod(floor(user_setting.id/user_setting.server),user_setting.VM)+1;
+                obj.vm=1;
                 path=user_setting.path{user_setting.AccessRouter==obj.destination};
                 candidates=intersect(path, user_setting.EdgeCloud(find(user_setting.assign)));
-                obj.ec=candidates(1);
+                obj.ec=candidates(end);
             end
             obj.content_size=user_setting.content_size;
         end

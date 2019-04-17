@@ -16,11 +16,11 @@ end
 % data.DeltaT=60*1;
 
 %Request Flow
-step=10;
+step=20;
 flow=1:100;
 NF=length(flow)/step;
 
-NF_TOTAL=100;
+NF_TOTAL=200;
 
 flow_parallel=cell(NF,1);
 for ii=1:NF
@@ -30,15 +30,18 @@ end
 %% Produce Netwrok Parameters
 %%%%%% relax the bandwidth constraint currently %%%%%%
 
+% simulation period: second
+time_slot_scalling=10;
+
 data.N_e=2; % number of servers on EC
 data.N_es=4; % number of VMs in servers on EC
 data.SC=10*1024; % size of caching content, Unit: MB
 % data.S_k=randi([5,10],size(flow))*102.4; % size of request content, Unit: MB
-data.S_k=ones(size(flow))*2*102.4;
+data.S_k=ones(size(flow))*1*102.4;
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
-% data.T_k=randi([1,10],size(flow)); % required transmission rate
-data.T_k=ones(size(flow)); 
-mid_array=[0.5,0.5,0.5,0.5,0.5,2,2,2,2,2];
+data.T_k=randi([1,10],size(flow)); % required transmission rate
+% data.T_k=ones(size(flow)); 
+mid_array=[0.5,0.5,0.5,0.5,0.5,3,3,3,3,3]/time_slot_scalling;
 % mid_array=ones(1,10)*0.5;
 data.delay_k=repmat(mid_array,1,NF_TOTAL/length(mid_array)); % delay tolerance of flow
 
@@ -49,14 +52,13 @@ moving_opts={'RL','RH','RHD','RM','CL','CH','CHD'};
 % data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*20.2;
 
 % idle power of server, unit: Watt
-data.U_es=ones(length(EdgeCloud),data.N_e)*95.92;
+data.U_es=ones(length(EdgeCloud),data.N_e)*95.92*time_slot_scalling;
 
-% power consumption of VM
-data.U_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*16.02;
+% power consumption of VM, unit: Watt
+data.U_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*16.02*time_slot_scalling;
 
-
-% power efficiency of storage(SSD)
-data.W_C=6.25*10^(-12)*8*1024*1024;
+% power efficiency of storage(SSD):Watts
+data.W_C=6.25*10^(-12)*8*1024*1024*time_slot_scalling;
 
 % power efficiency of transmission
 data.W_T=2.63*10^(-8)*8*1024*1024;
@@ -85,6 +87,9 @@ para.AccessRouter=AccessRouter;
 para.NormalRouter=[GW,NormalRouter];
 %% Optimal Solution
 data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{4});
+%cheating scenario producing
+pro_replace=GnrMovPro(60,length(AccessRouter),moving_opts{5},1);
+data.probability_ka(41:100,:)=pro_replace;
 
 time_slot=[1,3,5];
 
@@ -94,23 +99,29 @@ result3=cell(size(result1));
 result4=cell(size(result1));
 % load('result\sparse.mat');
 
+Monte_Iterations=1;
+alpha=0.8;
+LibSIZE=200;
+ProcessingTIME=0.01/time_slot_scalling;
+
 for jj=1:3
-    data.DeltaT=60*time_slot(jj);
-    data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*10.2; % service rate (per second)
+%     data.DeltaT=60*time_slot(jj);
+    data.DeltaT=1;
+    data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*57.85; % service rate (per second)
 %     data.mu_esv=ones(length(EdgeCloud),data.N_e,data.N_es)*2.88*data.DeltaT; % service rate (per second)
     parfor ii=1:NF
         buff1=MILP(flow_parallel{ii},data,para);
 %         buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
         result1{ii,jj}=buff1;
-        buff2=NetSimPlat(0,flow_parallel{ii},data,para,result1{ii,jj}.sol.pi,100);
+        buff2=NetSimPlat(0,flow_parallel{ii},data,para,result1{ii,jj}.sol.pi,Monte_Iterations,alpha,LibSIZE,ProcessingTIME);
         result2{ii,jj}=buff2;
         
         buff1=NEC(flow_parallel{ii},data,para);
-        buff2=NetSimPlat(0,flow_parallel{ii},data,para,buff1.sol.pi,100);
+        buff2=NetSimPlat(0,flow_parallel{ii},data,para,buff1.sol.pi,Monte_Iterations,alpha,LibSIZE,ProcessingTIME);
         result3{ii,jj}=buff2;
         
         buff1=RDM(flow_parallel{ii},data,para);       
-        buff2=NetSimPlat(1,flow_parallel{ii},data,para,buff1,100);
+        buff2=NetSimPlat(1,flow_parallel{ii},data,para,buff1,Monte_Iterations,alpha,LibSIZE,ProcessingTIME);
         result4{ii,jj}=buff2;        
     end
 end

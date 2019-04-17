@@ -56,6 +56,7 @@ delay_satis_num=zeros(size(user_num));  % QoS satisfied user in VM
 sojourn_total=zeros(size(user_num));      % total sojourn time of this VM
 sojourn_mean=zeros(size(user_num));    % average sojourn time of this VM
 busy_ratio=zeros(size(user_num));          % VM busy time probability
+hop_counter=zeros(size(user_num));
 
 if on_path==0 % get the index of ec+server+vm of assignment
     r=zeros(1,NF);
@@ -206,6 +207,7 @@ for nn=1:MonteTIME
          sojourn_total(nn,ii,:,:)=edge_cloud{ii}.sojourn_total;
          sojourn_mean(nn,ii,:,:)=edge_cloud{ii}.sojourn_mean;
          busy_ratio(nn,ii,:,:)=edge_cloud{ii}.busy_ratio;
+         hop_counter(nn,ii,:,:)=edge_cloud{ii}.hop_counter;
     end
     
 end
@@ -219,6 +221,7 @@ result.delay_satis_num=squeeze(mean(delay_satis_num,1));
 result.sojourn_total=squeeze(mean(sojourn_total,1));
 result.sojourn_mean=squeeze(mean(sojourn_mean,1));
 result.busy_ratio=squeeze(mean(busy_ratio,1));
+result.hop_conter=squeeze(mean(hop_counter,1));
 
 end
 

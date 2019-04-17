@@ -21,6 +21,8 @@ classdef EdgeCloudClass < RouterClass
         sojourn_total; % total sojourn time of this VM
         sojourn_mean; % average sojourn time of this VM
         busy_ratio; % VM busy time probability
+        
+        hop_counter; % number of hops from source to destination
     end
     
     methods
@@ -50,6 +52,7 @@ classdef EdgeCloudClass < RouterClass
             obj.sojourn_total=zeros(size(obj.buffer));
             obj.sojourn_mean=zeros(size(obj.buffer));
             obj.busy_ratio=zeros(size(obj.buffer));
+            obj.hop_counter=zeros(size(obj.buffer));
         end
         
         function SendingHandle(obj,~,eventData)
@@ -155,7 +158,8 @@ classdef EdgeCloudClass < RouterClass
                             obj.cache_hit_num(ii,jj)=obj.cache_hit_num(ii,jj)+1;
                         else
                             total_time=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6)+obj.retrieval_time;
-                            obj.buffer{ii,jj}{kk}{2}{6}=obj.buffer{ii,jj}{kk}{2}{6}+obj.retrieval_hop;
+%                             obj.buffer{ii,jj}{kk}{2}{6}=obj.buffer{ii,jj}{kk}{2}{6}+obj.retrieval_hop;
+                            obj.buffer{ii,jj}{kk}{2}{6}=obj.retrieval_hop;
                             if obj.debug
                                 fprintf('Package %d is cache-missed on %s\n', obj.buffer{ii,jj}{kk}{1},obj.name_table{obj.id});
                             end
@@ -170,6 +174,7 @@ classdef EdgeCloudClass < RouterClass
                             end
                             obj.delay_satis_num(ii,jj)=obj.delay_satis_num(ii,jj)+1;
                         end
+                        obj.hop_counter(ii,jj)=obj.hop_counter(ii,jj)+obj.buffer{ii,jj}{kk}{2}{6};
                     end
                 end
             end
