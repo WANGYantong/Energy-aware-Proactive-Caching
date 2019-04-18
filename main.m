@@ -41,7 +41,7 @@ data.S_k=ones(size(flow))*1*102.4;
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
 data.T_k=randi([1,10],size(flow)); % required transmission rate
 % data.T_k=ones(size(flow)); 
-mid_array=[0.5,0.5,0.5,0.5,0.5,3,3,3,3,3]/time_slot_scalling;
+mid_array=[0.8,0.8,0.8,0.8,0.8,3,3,3,3,3]/time_slot_scalling;
 % mid_array=ones(1,10)*0.5;
 data.delay_k=repmat(mid_array,1,NF_TOTAL/length(mid_array)); % delay tolerance of flow
 
@@ -99,9 +99,9 @@ result3=cell(size(result1));
 result4=cell(size(result1));
 % load('result\sparse.mat');
 
-Monte_Iterations=1;
+Monte_Iterations=100;
 alpha=0.8;
-LibSIZE=200;
+LibSIZE=100;
 ProcessingTIME=0.01/time_slot_scalling;
 
 for jj=1:3
