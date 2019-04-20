@@ -107,13 +107,15 @@ classdef EdgeCloudClass < RouterClass
                         nn=nn-1;
                     end
                     
-                    dt=zeros(1,nn);
-                    if nn>=2
-                        for i=1:nn-1
-                            diff=obj.buffer{ii,jj}{i+1}{3}{3}-obj.buffer{ii,jj}{i}{3}{3};
-                            dt(i)=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6);
-                        end
-                    end
+%                     dt=zeros(1,nn);
+%                     if nn>=2
+%                         for i=1:nn-1
+%                             diff=obj.buffer{ii,jj}{i+1}{3}{3}-obj.buffer{ii,jj}{i}{3}{3};
+%                             dt(i)=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6);
+%                         end
+%                     end
+                    dt=exprnd(1/nn,1,nn);
+                    
                     st=exprnd(1/obj.mu(ii,jj),1,nn);
                     a = zeros(1,nn);    %arrival time
                     b = zeros(1,nn);    %service time
@@ -151,15 +153,15 @@ classdef EdgeCloudClass < RouterClass
                     for kk=1:nn
                         diff=obj.buffer{ii,jj}{kk}{3}{3}-obj.buffer{ii,jj}{kk}{3}{1};
                         if obj.buffer{ii,jj}{kk}{4}<=obj.cache_threshold
-%                             total_time=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6)+cost(kk);
-                            total_time=cost(kk);
+                            total_time=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6)+cost(kk);
+%                             total_time=cost(kk);
                             if obj.debug
                                 fprintf('Package %d is cache-hitted on %s\n', obj.buffer{ii,jj}{kk}{1},obj.name_table{obj.id});
                             end
                             obj.cache_hit_num(ii,jj)=obj.cache_hit_num(ii,jj)+1;
                         else
-%                             total_time=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6)+obj.retrieval_time;
-                            total_time=obj.retrieval_time;
+                            total_time=diff(3)*24*60*60+diff(4)*60*60+diff(5)*60+diff(6)+obj.retrieval_time;
+%                             total_time=obj.retrieval_time;
 %                             obj.buffer{ii,jj}{kk}{2}{6}=obj.buffer{ii,jj}{kk}{2}{6}+obj.retrieval_hop;
                             obj.buffer{ii,jj}{kk}{2}{6}=obj.retrieval_hop;
                             if obj.debug

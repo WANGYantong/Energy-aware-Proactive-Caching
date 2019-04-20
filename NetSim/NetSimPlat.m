@@ -221,7 +221,7 @@ result.delay_satis_num=squeeze(mean(delay_satis_num,1));
 result.sojourn_total=squeeze(mean(sojourn_total,1));
 result.sojourn_mean=squeeze(mean(sojourn_mean,1));
 result.busy_ratio=squeeze(mean(busy_ratio,1));
-result.hop_conter=squeeze(mean(hop_counter,1));
+result.hop_counter=squeeze(mean(hop_counter,1));
 
 end
 

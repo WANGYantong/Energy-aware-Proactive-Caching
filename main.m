@@ -2,7 +2,7 @@ clear
 clc
 
 addpath(genpath(pwd));
-rng(1);
+% rng(1);
 %% Generate Network
 [G,EdgeCloud,NormalRouter,AccessRouter,vertice_names]=SetNetTopo(1);
 N=length(vertice_names);
@@ -41,7 +41,7 @@ data.S_k=ones(size(flow))*1*102.4;
 data.B_l=2*1024*ones(length(G.Edges.Weight),1); % link available bandwidth, Unit:Mbps
 data.T_k=randi([1,10],size(flow)); % required transmission rate
 % data.T_k=ones(size(flow)); 
-mid_array=[0.8,0.8,0.8,0.8,0.8,3,3,3,3,3]/time_slot_scalling;
+mid_array=[0.5,1,1,1,1,3,3,5,5,5]/time_slot_scalling;
 % mid_array=ones(1,10)*0.5;
 data.delay_k=repmat(mid_array,1,NF_TOTAL/length(mid_array)); % delay tolerance of flow
 
@@ -88,8 +88,10 @@ para.NormalRouter=[GW,NormalRouter];
 %% Optimal Solution
 data.probability_ka=GnrMovPro(NF_TOTAL,length(AccessRouter),moving_opts{4});
 %cheating scenario producing
-pro_replace=GnrMovPro(60,length(AccessRouter),moving_opts{5},1);
-data.probability_ka(41:100,:)=pro_replace;
+pro_replace=GnrMovPro(50,length(AccessRouter),moving_opts{5},1);
+for ii=1:5
+    data.probability_ka((11+20*(ii-1)):(20+20*(ii-1)),:)=pro_replace((1+10*(ii-1)):(10+10*(ii-1)),:);
+end
 
 time_slot=[1,3,5];
 
@@ -99,10 +101,10 @@ result3=cell(size(result1));
 result4=cell(size(result1));
 % load('result\sparse.mat');
 
-Monte_Iterations=100;
+Monte_Iterations=1000;
 alpha=0.8;
 LibSIZE=100;
-ProcessingTIME=0.01/time_slot_scalling;
+ProcessingTIME=0.001/time_slot_scalling;
 
 for jj=1:3
 %     data.DeltaT=60*time_slot(jj);
@@ -113,7 +115,7 @@ for jj=1:3
         buff1=MILP(flow_parallel{ii},data,para);
 %         buff2=NetSimPlat(flow_parallel{ii},data,para,buff1.sol.pi,10);
         result1{ii,jj}=buff1;
-        buff2=NetSimPlat(0,flow_parallel{ii},data,para,result1{ii,jj}.sol.pi,Monte_Iterations,alpha,LibSIZE,ProcessingTIME);
+        buff2=NetSimPlat(0,flow_parallel{ii},data,para,buff1.sol.pi,Monte_Iterations,alpha,LibSIZE,ProcessingTIME);
         result2{ii,jj}=buff2;
         
         buff1=NEC(flow_parallel{ii},data,para);
@@ -127,6 +129,7 @@ for jj=1:3
 end
 
 save('result\sparse.mat','result1','result2','result3','result4');
+
 % if data.R==cache_ratio(1)
 %     buffer=result;
 %     if ispc

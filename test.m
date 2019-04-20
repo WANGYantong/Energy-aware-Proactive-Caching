@@ -13,14 +13,14 @@ UniCach_hop_counter=zeros(size(EECQG_total));
 flow_scaling=1:5;
 
 for ii=1:5
-%     EECQG_total(ii)=sum(result2{ii,1}.total,'all');
-%     EECQG_satis_ratio(ii)=sum(result2{ii,1}.cache_hit_num,'all')/(flow_scaling(ii)*20);
-%     EECQG_hop_counter(ii)=sum(result2{ii,1}.hop_counter,'all')/(flow_scaling(ii)*20);
+    EECQG_total(ii)=sum(result2{ii,1}.total,'all');
+    EECQG_satis_ratio(ii)=sum(result2{ii,1}.cache_hit_num,'all')/(flow_scaling(ii)*20);
+    EECQG_hop_counter(ii)=sum(result2{ii,1}.hop_counter,'all')/(flow_scaling(ii)*20);
     NECC_total(ii)=sum(result3{ii,1}.total,'all');
-    NECC_satis_ratio(ii)=sum(result3{ii,1}.cache_hit_num,'all')/(flow_scaling(ii)*20);
+    NECC_satis_ratio(ii)=sum(result3{ii,1}.delay_satis_num,'all')/(flow_scaling(ii)*20);
     NECC_hop_counter(ii)=sum(result3{ii,1}.hop_counter,'all')/(flow_scaling(ii)*20);
     UniCach_total(ii)=sum(result4{ii,1}.total,'all');
-    UniCach_satis_ratio(ii)=sum(result3{ii,1}.cache_hit_num,'all')/(flow_scaling(ii)*20);
+    UniCach_satis_ratio(ii)=sum(result4{ii,1}.delay_satis_num,'all')/(flow_scaling(ii)*20);
     UniCach_hop_counter(ii)=sum(result4{ii,1}.hop_counter,'all')/(flow_scaling(ii)*20);
 end
 

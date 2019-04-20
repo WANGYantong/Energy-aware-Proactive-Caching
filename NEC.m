@@ -31,8 +31,8 @@ ec_index=II(pointer);
 server_index=1;
 vm_index=1;
 
-% indicator=data.mu_esv-1/min(data.delay_k);
-indicator=data.mu_esv-20;
+indicator=data.mu_esv-1/min(data.delay_k);
+% indicator=data.mu_esv;
 
 for ii=1:NF
     if indicator(ec_index, server_index, vm_index)>1
